@@ -1,0 +1,12 @@
+name: faithrec-mm
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      # Dependencies will be pinned after validating MMRec on this machine.
+      - pip-tools
+

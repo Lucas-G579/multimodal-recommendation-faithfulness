@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Research dependencies and data
+external/
+data/raw/
+data/processed/
+
+# Experiment artifacts
+outputs/
+checkpoints/
+logs/
+wandb/
+*.pt
+*.pth
+*.ckpt
+
+# Secrets
+.env
+*.key
+
+# Keep small reproducibility manifests and aggregate results
+!data/README.md
+!data/manifests/
+!data/manifests/**
+!results/
+!results/**
+
