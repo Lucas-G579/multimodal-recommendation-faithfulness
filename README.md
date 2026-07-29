@@ -2,7 +2,7 @@
 
 面向多模态推荐解释的模态归因错配审计项目。
 
-当前阶段：Day 1，建立可复现环境并跑通 MMRec 最小示例。
+当前阶段：Day 2，已完成 MMRec 的 BM3 / Baby 正式基线复现并保存最佳 checkpoint。
 
 ## 研究问题
 
@@ -12,8 +12,8 @@
 
 - Windows 10/11
 - Python 3.11
-- PyTorch（版本将在 MMRec 兼容性验证后锁定）
-- NVIDIA RTX 4050 Laptop GPU，6GB VRAM
+- PyTorch 2.3.0+cu121
+- NVIDIA RTX 4050 Laptop GPU（6 GB VRAM）
 
 ## 目录
 
@@ -23,6 +23,7 @@
 - `configs/`：后续固定的数据、模型和审计配置
 - `results/`：可提交的小型汇总结果
 - `outputs/`：训练输出与 checkpoint，不提交
+- `patches/`：对上游代码的最小可审计补丁
 
 完整路线见 [暑期两个月执行方案.md](./暑期两个月执行方案.md)。
 
@@ -31,8 +32,15 @@
 ```powershell
 .\.venv\Scripts\python.exe .\scripts\check_environment.py
 .\.venv\Scripts\python.exe .\scripts\summarize_interactions.py .\external\MMRec\data\baby\baby.inter
-.\.venv\Scripts\python.exe .\scripts\run_mmrec_smoke.py
+.\.venv\Scripts\python.exe .\scripts\inspect_mmrec_features.py `
+  --interactions .\external\MMRec\data\baby\baby.inter `
+  --image .\external\MMRec\data\baby\image_feat.npy `
+  --text .\external\MMRec\data\baby\text_feat.npy
+.\.venv\Scripts\python.exe .\scripts\run_mmrec_smoke.py --model LightGCN --profile smoke
+.\.venv\Scripts\python.exe .\scripts\run_mmrec_smoke.py --model BM3 --profile smoke
 ```
 
-2026-07-29 已在 RTX 4050 上完成 LightGCN/Baby 单 epoch smoke test。
-正式基线不得引用 smoke test 指标。
+LightGCN 和 BM3 的单 epoch 结果只用于管线 smoke test，不得作为正式基线引用。
+
+BM3 / Baby 正式复现结果：Recall@20 0.0862、NDCG@20 0.0369，相对 MMRec
+发布日志的差异均小于 5%。详见 [Day 2 复现报告](./results/day2_bm3_reproduction.md)。

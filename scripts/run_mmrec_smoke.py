@@ -1,7 +1,8 @@
-"""Run a single-epoch MMRec LightGCN smoke test on the Baby dataset."""
+"""Run controlled MMRec LightGCN/BM3 checks on the Baby dataset."""
 
 from __future__ import annotations
 
+import argparse
 import os
 import sys
 from pathlib import Path
@@ -34,8 +35,9 @@ sys.path.insert(0, str(MMREC_SRC))
 from utils.quick_start import quick_start  # noqa: E402
 
 
-SMOKE_CONFIG = {
+BASE_CONFIG = {
     "gpu_id": 0,
+    "checkpoint_dir": str(PROJECT_ROOT / "outputs" / "checkpoints" / "mmrec"),
     "epochs": 1,
     "stopping_step": 1,
     "train_batch_size": 4096,
@@ -45,15 +47,54 @@ SMOKE_CONFIG = {
     "valid_metric": "Recall@20",
     "save_recommended_topk": False,
     "seed": [2026],
-    "n_layers": [1],
-    "reg_weight": [1e-4],
-    "hyper_parameters": ["seed", "n_layers", "reg_weight"],
 }
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--model", choices=["LightGCN", "BM3"], default="LightGCN"
+    )
+    parser.add_argument(
+        "--profile", choices=["smoke", "official"], default="smoke"
+    )
+    args = parser.parse_args()
+
+    model_config = {
+        "LightGCN": {
+            "n_layers": [1],
+            "reg_weight": [1e-4],
+            "hyper_parameters": ["seed", "n_layers", "reg_weight"],
+        },
+        "BM3": {
+            "n_layers": [1],
+            "dropout": [0.3],
+            "reg_weight": [0.01],
+            "hyper_parameters": ["seed", "n_layers", "dropout", "reg_weight"],
+        },
+    }
+
+    run_config = BASE_CONFIG | model_config[args.model]
+    save_model = False
+    if args.profile == "official":
+        if args.model != "BM3":
+            raise ValueError("The official profile is currently defined only for BM3")
+        run_config |= {
+            "epochs": 1000,
+            "stopping_step": 20,
+            "train_batch_size": 2048,
+            "eval_batch_size": 4096,
+            "metrics": ["Recall", "NDCG", "Precision", "MAP"],
+            "topk": [5, 10, 20, 50],
+            "seed": [999],
+            "n_layers": [1],
+            "dropout": [0.5],
+            "reg_weight": [0.1],
+        }
+        save_model = True
+
     quick_start(
-        model="LightGCN",
+        model=args.model,
         dataset="baby",
-        config_dict=SMOKE_CONFIG,
-        save_model=False,
+        config_dict=run_config,
+        save_model=save_model,
     )

@@ -10,3 +10,5 @@
 | 2026-07-29 | LightGCN smoke | 单 epoch、Baby、seed 2026 | 模型成功构建后，Matplotlib 字体缓存写入用户目录被拒绝 | 默认 `MPLCONFIGDIR` 位于工作区外 | 在入口脚本中固定为 `outputs/cache/matplotlib` | 已修正并复跑通过 |
 | 2026-07-29 | LightGCN smoke | 完成 epoch 0 后验证 | `AttributeError: numpy has no attribute float` | MMRec 评估器仍使用 NumPy 已删除别名 `np.float` | 保持上游快照不变，在项目入口提供 `np.float = float` 兼容层；扫描确认仅 4 处同类引用 | 已修正并复跑通过 |
 | 2026-07-29 | 上游版本记录 | GitHub commits API | 匿名 API rate limit exceeded | 共享出口已耗尽匿名额度 | 保留 ZIP SHA-256；commit 标记待补记 | 待补记 |
+| 2026-07-29 | Baby 图像特征 | gdown 默认 cookies | Google CDN TLS EOF，未留下文件 | cookies 路径获得的 CDN 连接不稳定 | 保持 TLS 校验，改用 `--no-cookies`；下载及 SHA-256 校验成功 | 已绕过 |
+| 2026-07-29 | BM3 checkpoint | 正式训练，`saved=True` | 训练成功但没有 `saved/` 或 checkpoint | 当前 MMRec `Trainer.fit` 接收 `saved` 却没有保存实现 | 添加可审计补丁，仅在验证集刷新时保存最佳 state_dict | 已修正，待复跑 |

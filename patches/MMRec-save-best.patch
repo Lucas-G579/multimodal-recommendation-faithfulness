@@ -1,0 +1,34 @@
+diff --git a/src/common/trainer.py b/src/common/trainer.py
+--- a/src/common/trainer.py
++++ b/src/common/trainer.py
+@@ -279,6 +279,30 @@ class Trainer(AbstractTrainer):
+                         self.logger.info(update_output)
+                     self.best_valid_result = valid_result
+                     self.best_test_upon_valid = test_result
++                    if saved:
++                        checkpoint_dir = self.config['checkpoint_dir']
++                        os.makedirs(checkpoint_dir, exist_ok=True)
++                        checkpoint_path = os.path.join(
++                            checkpoint_dir,
++                            '{}-{}-best.pth'.format(
++                                self.config['model'], self.config['dataset']
++                            )
++                        )
++                        torch.save(
++                            {
++                                'epoch': epoch_idx,
++                                'model': self.config['model'],
++                                'dataset': self.config['dataset'],
++                                'state_dict': self.model.state_dict(),
++                                'valid_result': valid_result,
++                                'test_result': test_result,
++                            },
++                            checkpoint_path,
++                        )
++                        if verbose:
++                            self.logger.info(
++                                'Best checkpoint saved at: {}'.format(checkpoint_path)
++                            )
+ 
+                 if stop_flag:
+                     stop_output = '+++++Finished training, best eval result in epoch %d' % \
