@@ -26,3 +26,13 @@
 
 完整路线见 [暑期两个月执行方案.md](./暑期两个月执行方案.md)。
 
+## 本地快速验证
+
+```powershell
+.\.venv\Scripts\python.exe .\scripts\check_environment.py
+.\.venv\Scripts\python.exe .\scripts\summarize_interactions.py .\external\MMRec\data\baby\baby.inter
+.\.venv\Scripts\python.exe .\scripts\run_mmrec_smoke.py
+```
+
+2026-07-29 已在 RTX 4050 上完成 LightGCN/Baby 单 epoch smoke test。
+正式基线不得引用 smoke test 指标。

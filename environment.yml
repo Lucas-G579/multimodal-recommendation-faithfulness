@@ -7,6 +7,5 @@ dependencies:
   - python=3.11
   - pip
   - pip:
-      # Dependencies will be pinned after validating MMRec on this machine.
-      - pip-tools
-
+      # Install PyTorch separately from the official CUDA wheel index.
+      - -r requirements-mmrec-py311.txt
