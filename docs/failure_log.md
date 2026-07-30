@@ -19,4 +19,4 @@
 | 2026-07-30 | MGCN seed=2026 进程监控 | `Start-Process` 后格式化进程对象 | PowerShell 受限语言拒绝构造 `PSCustomObject`；训练进程已启动并正常完成 | 受限语言只允许核心类型，错误发生在启动后的状态展示步骤 | 不重跑训练；检查日志、manifest 和 checkpoint，并进行独立恢复验收 | 已确认不影响训练 |
 | 2026-07-30 | 多 seed checkpoint 恢复 | 验证相对路径 checkpoint | 相对路径被解析到 `external/MMRec/src/outputs` | 导入 MMRec runtime 时改变了当前工作目录 | 验证器将相对输入/输出统一锚定项目根目录 | 已修正并验收通过 |
 | 2026-07-30 | Baby ID 映射恢复 | 尝试逐行比较重建数据与 `baby.inter` | 四元组内容一致但行及 split 顺序不同 | 上游预处理在按用户切分前执行了没有固定 `random_state` 的 `df.sample(frac=1)` | 改为比较完整 `(userID,itemID,rating,timestamp)` 多重集；160,792 条记录精确一致，并记录 split 顺序不可复原 | 已确认，不影响 shuffle 前建立的 ID 映射 |
-| 2026-07-30 | Baby 商品元数据 | 下载 `meta_Baby.json.gz` | 10 分钟后仅得到 8,847,360 字节，gzip 检查报意外 EOF | 远端传输未完成；具体网络原因未验证 | 保留可续传的部分文件，不静默重试；等待明确授权后使用 HTTP Range 续传并重新做 gzip/SHA-256 验收 | 待重试 |
+| 2026-07-30 | Baby 商品元数据 | 下载 `meta_Baby.json.gz` | 首次下载过程中 gzip 检查报意外 EOF | 远端传输当时未完成；具体网络原因未验证 | 获得明确授权后断点续传；31,328,004 字节文件完整解出 71,317 行，SHA-256 为 `89013C...F70E` | 已续传并验收通过 |

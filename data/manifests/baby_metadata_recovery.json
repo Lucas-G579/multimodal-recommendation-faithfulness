@@ -1,0 +1,44 @@
+{
+  "status": "PASSED",
+  "source": {
+    "dataset": "Amazon product data 2014 / Baby",
+    "ratings_sha256": "A219F779B2694F660F1EE243F2AF71D63C2C9828425E716569FAACE305E978D1",
+    "metadata_sha256": "89013C16B38DC03DD7252DAC7FB4F33A7945A7FFD8D5DCF1788BB0A301DFF70E"
+  },
+  "verification": {
+    "interaction_multiset_exact_match": true,
+    "split_note": "MMRec preprocessing shuffles without a recorded seed before assigning per-user train/valid/test labels; mapping is created before that shuffle, so the full interaction multiset is the recoverable identity check",
+    "split_counts": {
+      "0": 118551,
+      "1": 20559,
+      "2": 21682
+    },
+    "rows": 160792,
+    "users": 19445,
+    "items": 7050
+  },
+  "coverage": {
+    "metadata": {
+      "count": 7050,
+      "fraction": 1.0
+    },
+    "title": {
+      "count": 7037,
+      "fraction": 0.9981560283687944
+    },
+    "description": {
+      "count": 6386,
+      "fraction": 0.9058156028368795
+    },
+    "image_url": {
+      "count": 7037,
+      "fraction": 0.9981560283687944
+    }
+  },
+  "outputs": {
+    "mapping_path": "D:\\study\\多模态推荐忠实性\\data\\processed\\baby_item_mapping.tsv",
+    "mapping_sha256": "DBD8870FC3DDBD0F20FB99549F25F6AECB425666BD0ED2B9B248FC7B3B6793E8",
+    "items_path": "D:\\study\\多模态推荐忠实性\\data\\processed\\baby_item_metadata.jsonl",
+    "items_sha256": "5E74E0894C85A8022C629249DCC2D98ABC99EE54289BE8A0EED92D6587A2E1D2"
+  }
+}

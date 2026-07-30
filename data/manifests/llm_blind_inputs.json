@@ -1,0 +1,22 @@
+{
+  "status": "FROZEN",
+  "protocol_version": "1.1",
+  "answer_bearing_fields_found": [],
+  "rows": 1470,
+  "history": {
+    "selection": "up to 5 x_label=0 items per user; timestamp descending, item ID ascending tie-break",
+    "entries": 6351,
+    "image_coverage": 0.9995276334435522
+  },
+  "target_coverage": {
+    "title": 1.0,
+    "description": 0.8748299319727891,
+    "image": 1.0
+  },
+  "inputs": {
+    "samples_sha256": "2C45054DEF48F0B967F294CB556FBAA9F34145C88DCF5B0DF88038166358CA6E",
+    "metadata_sha256": "5E74E0894C85A8022C629249DCC2D98ABC99EE54289BE8A0EED92D6587A2E1D2",
+    "interactions_sha256": "E0ABB033EA5CC538BB2BECD8C3DC50B619F28F7974BA61F5ED11CE27CF405940"
+  },
+  "output_sha256": "32042936E05B74B8C513851FCBD51A0F04AE39E7E1D72D259C2BC9414FF95526"
+}
