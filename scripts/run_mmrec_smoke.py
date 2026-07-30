@@ -52,7 +52,7 @@ BASE_CONFIG = {
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--model", choices=["LightGCN", "BM3"], default="LightGCN"
+        "--model", choices=["LightGCN", "BM3", "MGCN"], default="LightGCN"
     )
     parser.add_argument(
         "--profile", choices=["smoke", "official"], default="smoke"
@@ -71,14 +71,16 @@ if __name__ == "__main__":
             "reg_weight": [0.01],
             "hyper_parameters": ["seed", "n_layers", "dropout", "reg_weight"],
         },
+        "MGCN": {
+            "cl_loss": [0.01],
+            "hyper_parameters": ["seed", "cl_loss"],
+        },
     }
 
     run_config = BASE_CONFIG | model_config[args.model]
     save_model = False
     if args.profile == "official":
-        if args.model != "BM3":
-            raise ValueError("The official profile is currently defined only for BM3")
-        run_config |= {
+        common_official = {
             "epochs": 1000,
             "stopping_step": 20,
             "train_batch_size": 2048,
@@ -86,10 +88,22 @@ if __name__ == "__main__":
             "metrics": ["Recall", "NDCG", "Precision", "MAP"],
             "topk": [5, 10, 20, 50],
             "seed": [999],
-            "n_layers": [1],
-            "dropout": [0.5],
-            "reg_weight": [0.1],
         }
+        if args.model == "BM3":
+            run_config |= common_official | {
+                "n_layers": [1],
+                "dropout": [0.5],
+                "reg_weight": [0.1],
+            }
+        elif args.model == "MGCN":
+            run_config |= common_official | {
+                "cl_loss": [0.01],
+                "knn_k": 20,
+            }
+        else:
+            raise ValueError(
+                "The official profile is currently defined for BM3 and MGCN"
+            )
         save_model = True
 
     quick_start(

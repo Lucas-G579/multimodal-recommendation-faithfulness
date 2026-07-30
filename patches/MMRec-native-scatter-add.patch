@@ -1,0 +1,15 @@
+diff --git a/src/utils/utils.py b/src/utils/utils.py
+--- a/src/utils/utils.py
++++ b/src/utils/utils.py
+@@ -136,9 +136,9 @@ def build_sim(context):
+     return sim
+ 
+ def get_sparse_laplacian(edge_index, edge_weight, num_nodes, normalization='none'):
+-    from torch_scatter import scatter_add
+     row, col = edge_index[0], edge_index[1]
+-    deg = scatter_add(edge_weight, row, dim=0, dim_size=num_nodes)
++    deg = torch.zeros(num_nodes, dtype=edge_weight.dtype, device=edge_weight.device)
++    deg.scatter_add_(0, row, edge_weight)
+ 
+     if normalization == 'sym':
+         deg_inv_sqrt = deg.pow_(-0.5)

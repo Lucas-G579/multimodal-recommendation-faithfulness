@@ -15,3 +15,14 @@ Apply from the MMRec repository root:
 git apply ..\..\patches\MMRec-save-best.patch
 ```
 
+## MMRec-native-scatter-add.patch
+
+MGCN uses `torch_scatter` for one degree-aggregation operation. The patch
+replaces it with the equivalent native PyTorch 2.3 `Tensor.scatter_add_`, avoiding
+an unnecessary compiled dependency on Windows.
+
+Apply from the MMRec repository root:
+
+```powershell
+git apply ..\..\patches\MMRec-native-scatter-add.patch
+```

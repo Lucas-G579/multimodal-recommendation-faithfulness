@@ -2,7 +2,7 @@
 
 面向多模态推荐解释的模态归因错配审计项目。
 
-当前阶段：Day 3，已验证 BM3 checkpoint 可精确恢复，并完成推理路径审计。
+当前阶段：Day 4，已复现 MGCN，并验证其图像/文本推理分支可独立干预。
 
 ## 研究问题
 
@@ -48,3 +48,8 @@ BM3 / Baby 正式复现结果：Recall@20 0.0862、NDCG@20 0.0369，相对 MMRec
 BM3 checkpoint 恢复后的 32 个验证/测试指标与存档完全一致。推理路径审计同时确认：
 BM3 的图像和文本只在训练损失中发挥作用，训练后直接清零模态不是有效的依赖测量方法。
 详见 [Day 3 审计报告](./results/day3_checkpoint_and_path_audit.md)。
+
+MGCN / Baby 正式结果为 Recall@20 0.0933、NDCG@20 0.0421，与论文结果的相对差异
+均小于 5%；checkpoint 的 32 个验证/测试指标恢复后完全一致。固定 32 位用户的资格探针
+确认图像和文本分支均会改变推荐分数及排名。详见
+[Day 4 MGCN 资格报告](./results/day4_mgcn_qualification.md)。
