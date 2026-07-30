@@ -12,3 +12,5 @@
 | 2026-07-29 | 上游版本记录 | GitHub commits API | 匿名 API rate limit exceeded | 共享出口已耗尽匿名额度 | 保留 ZIP SHA-256；commit 标记待补记 | 待补记 |
 | 2026-07-29 | Baby 图像特征 | gdown 默认 cookies | Google CDN TLS EOF，未留下文件 | cookies 路径获得的 CDN 连接不稳定 | 保持 TLS 校验，改用 `--no-cookies`；下载及 SHA-256 校验成功 | 已绕过 |
 | 2026-07-29 | BM3 checkpoint | 正式训练，`saved=True` | 训练成功但没有 `saved/` 或 checkpoint | 当前 MMRec `Trainer.fit` 接收 `saved` 却没有保存实现 | 添加可审计补丁，仅在验证集刷新时保存最佳 state_dict | 已修正，待复跑 |
+| 2026-07-30 | BM3 checkpoint 恢复 | 独立构建 `TrainDataLoader` | `RecDataset` 缺少 `inter_num` | MMRec 把 `inter_num` 的初始化隐藏在 `RecDataset.__str__()`；`quick_start` 因日志输出偶然触发它 | 恢复脚本显式初始化三个数据切分的统计字段，并保留注释说明上游副作用 | 已修正，待复跑 |
+| 2026-07-30 | BM3 推理路径探针 | 用“任意非零差异”判断干预是否改变分数 | 图文清零出现最大约 `2.38e-7` 的差异 | GPU 稀疏矩阵重复计算存在末位浮点抖动，二进制零差异标准不适用 | 增加不做修改的重复计算对照；以 `1e-6` 为数值容差，并保留商品向量清零正对照 | 已修正，待复跑 |

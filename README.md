@@ -2,7 +2,7 @@
 
 面向多模态推荐解释的模态归因错配审计项目。
 
-当前阶段：Day 2，已完成 MMRec 的 BM3 / Baby 正式基线复现并保存最佳 checkpoint。
+当前阶段：Day 3，已验证 BM3 checkpoint 可精确恢复，并完成推理路径审计。
 
 ## 研究问题
 
@@ -44,3 +44,7 @@ LightGCN 和 BM3 的单 epoch 结果只用于管线 smoke test，不得作为正
 
 BM3 / Baby 正式复现结果：Recall@20 0.0862、NDCG@20 0.0369，相对 MMRec
 发布日志的差异均小于 5%。详见 [Day 2 复现报告](./results/day2_bm3_reproduction.md)。
+
+BM3 checkpoint 恢复后的 32 个验证/测试指标与存档完全一致。推理路径审计同时确认：
+BM3 的图像和文本只在训练损失中发挥作用，训练后直接清零模态不是有效的依赖测量方法。
+详见 [Day 3 审计报告](./results/day3_checkpoint_and_path_audit.md)。
