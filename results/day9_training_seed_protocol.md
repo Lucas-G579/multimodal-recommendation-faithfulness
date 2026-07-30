@@ -3,7 +3,7 @@
 - Origin Skill: academic-research-suite / experiment-agent
 - Origin Mode: plan
 - Origin Date: 2026-07-30
-- Verification Status: PLANNED
+- Verification Status: VERIFIED
 - Version Label: mgcn_training_seed_protocol_v1
 
 # Day 9：MGCN 跨训练种子复验协议
@@ -53,6 +53,45 @@
 
 最终主分析样本必须跨三个训练种子都得到一致的 A 级非并列标签。若覆盖率过低，
 应如实报告并调整研究问题，不能放宽规则来追求样本量。
+
+## 训练与恢复结果
+
+两个预注册的新种子均正常完成 early stopping，没有更换种子或因结果高低删除运行。
+
+| 训练 seed | 最佳 epoch | 测试 Recall@20 | 测试 NDCG@20 | checkpoint SHA-256 |
+|---:|---:|---:|---:|---|
+| 999（已有） | 32 | 0.0933 | 0.0421 | `8607638F89E68B3ED395018B605EAD86C4FE14310599C67A3EAFBB981080497E` |
+| 2026 | 37 | 0.0934 | 0.0418 | `B355E39B86A34DDB7189D492269DFF68D70BD7DD8AF362DF17AEAE54852CE26A` |
+| 3407 | 35 | 0.0926 | 0.0414 | `23FBF81CF277886A9E4E3287F71EDF6807F96426AA6E9A00D3C4EC3599C26EFF` |
+
+三个种子的 Recall@20 范围为 0.0926–0.0934，NDCG@20 范围为
+0.0414–0.0421。两个新种子相对论文 Baby/All 的 Recall@20=0.0964、
+NDCG@20=0.0427 均在 5% 相对误差内。
+
+每个新 checkpoint 均被重新构建模型、严格加载参数并重新计算 16 个验证指标和
+16 个测试指标。两次验收的全部 32 项指标与 checkpoint 存档值完全一致，
+绝对差均为 0。
+
+| 产物 | SHA-256 |
+|---|---|
+| seed=2026 `run_manifest.json` | `709631A1CFA923D89F4FA41CC5322E4AB8CF721B090FEDF49FC7534B5A0A0C11` |
+| seed=2026 恢复验收 JSON | `72886FB681D22F11079E68FC4023350E163B45144A4ACCF95B0702D1FB697113` |
+| seed=3407 `run_manifest.json` | `12448504C00C9CAE5CBAAD47571D22403D948F0BF6E8208EEDB1F7BC188726D1` |
+| seed=3407 恢复验收 JSON | `3510878E29DF63D8BF863F5B12E82B41ED63EAEE5A16A5C3D53C7529BC97621B` |
+
+## 当前结论边界
+
+可以确认：
+
+- 三个训练种子的整体推荐性能接近；
+- 两个新 checkpoint 均可严格恢复；
+- 新模型具备进入跨训练种子干预审计的资格。
+
+尚不能确认：
+
+- 同一条推荐在三个训练种子下具有相同的图像/文本依赖标签；
+- seed=999 的 3,815 个 A 级样本仍会在另外两个模型中保持 A 级；
+- 三个种子的整体指标接近，等价于内部决策机制接近。
 
 ## 资源和停止规则
 

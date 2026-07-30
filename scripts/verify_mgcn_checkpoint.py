@@ -23,8 +23,25 @@ CONFIG_OVERRIDES = runtime.CONFIG_OVERRIDES | {
 }
 
 
+def project_path(path: Path) -> Path:
+    if path.is_absolute():
+        return path.resolve()
+    return (runtime.PROJECT_ROOT / path).resolve()
+
+
+def infer_training_seed(checkpoint_path: Path) -> int:
+    manifest_path = checkpoint_path.with_name("run_manifest.json")
+    if not manifest_path.is_file():
+        return 999
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    if manifest.get("model") != "MGCN" or manifest.get("dataset") != "baby":
+        raise ValueError(f"Unexpected run manifest identity: {manifest_path}")
+    return int(manifest["seed"])
+
+
 def load_mgcn(
     checkpoint_path: Path,
+    training_seed: int | None = None,
 ) -> tuple[torch.nn.Module, runtime.Config, runtime.EvalDataLoader, runtime.EvalDataLoader]:
     checkpoint = torch.load(checkpoint_path, map_location="cpu")
     if checkpoint["model"] != "MGCN" or checkpoint["dataset"] != "baby":
@@ -32,7 +49,11 @@ def load_mgcn(
             f"Expected MGCN/baby, got {checkpoint['model']}/{checkpoint['dataset']}"
         )
 
-    config = runtime.Config("MGCN", "baby", dict(CONFIG_OVERRIDES))
+    if training_seed is None:
+        training_seed = infer_training_seed(checkpoint_path)
+    config_overrides = dict(CONFIG_OVERRIDES)
+    config_overrides["seed"] = training_seed
+    config = runtime.Config("MGCN", "baby", config_overrides)
     runtime.init_seed(config["seed"])
     dataset = runtime.RecDataset(config)
     train_dataset, valid_dataset, test_dataset = dataset.split()
@@ -69,11 +90,24 @@ def main() -> None:
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--metric-tolerance", type=float, default=1e-12)
     parser.add_argument("--sample-users", type=int, default=32)
+    parser.add_argument(
+        "--training-seed",
+        type=int,
+        help="Override the seed inferred from a sibling run_manifest.json.",
+    )
     args = parser.parse_args()
 
-    checkpoint_path = args.checkpoint.resolve()
+    checkpoint_path = project_path(args.checkpoint)
+    args.output = project_path(args.output)
     checkpoint = torch.load(checkpoint_path, map_location="cpu")
-    model, config, valid_data, test_data = load_mgcn(checkpoint_path)
+    training_seed = (
+        args.training_seed
+        if args.training_seed is not None
+        else infer_training_seed(checkpoint_path)
+    )
+    model, config, valid_data, test_data = load_mgcn(
+        checkpoint_path, training_seed=training_seed
+    )
     trainer = runtime.Trainer(config, model)
 
     valid_result = trainer.evaluate(valid_data)
@@ -100,7 +134,11 @@ def main() -> None:
             "sha256": runtime.sha256_file(checkpoint_path),
             "epoch": int(checkpoint["epoch"]),
         },
-        "configuration": {"cl_loss": 0.01, "knn_k": 20, "seed": 999},
+        "configuration": {
+            "cl_loss": 0.01,
+            "knn_k": 20,
+            "seed": training_seed,
+        },
         "metric_tolerance": args.metric_tolerance,
         "valid_comparison": valid_comparison,
         "test_comparison": test_comparison,
