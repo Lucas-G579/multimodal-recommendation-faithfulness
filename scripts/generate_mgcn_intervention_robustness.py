@@ -94,9 +94,12 @@ def main() -> None:
     parser.add_argument("--topk", type=int, default=20)
     parser.add_argument("--permutation-seed", type=int, default=20260730)
     args = parser.parse_args()
+    checkpoint_path = runtime.project_path(args.checkpoint)
+    args.output = runtime.project_path(args.output)
+    args.summary = runtime.project_path(args.summary)
 
     model, _config, _valid_data, _test_data = runtime.load_mgcn(
-        args.checkpoint.resolve()
+        checkpoint_path
     )
     model = move_inference_tensors(model, torch.device("cpu"))
     model.eval()
@@ -220,7 +223,7 @@ def main() -> None:
     summary: dict[str, Any] = {
         "status": "PASSED",
         "checkpoint_sha256": runtime.runtime.sha256_file(
-            args.checkpoint.resolve()
+            checkpoint_path
         ),
         "audit_sha256": sha256_file(args.output),
         "scope": {

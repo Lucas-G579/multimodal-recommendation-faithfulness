@@ -78,6 +78,11 @@ def main() -> None:
     )
     args = parser.parse_args()
     seeds = parse_seeds(args.seeds)
+    checkpoint_path = runtime.project_path(args.checkpoint)
+    args.robustness_audit = runtime.project_path(args.robustness_audit)
+    args.output = runtime.project_path(args.output)
+    args.labels_output = runtime.project_path(args.labels_output)
+    args.summary = runtime.project_path(args.summary)
 
     reference = pd.read_csv(args.robustness_audit)
     required = {
@@ -92,7 +97,7 @@ def main() -> None:
         raise KeyError(f"Robustness audit missing columns: {sorted(missing)}")
 
     model, _config, _valid_data, _test_data = runtime.load_mgcn(
-        args.checkpoint.resolve()
+        checkpoint_path
     )
     model = move_inference_tensors(model, torch.device("cpu"))
     model.eval()
@@ -258,7 +263,7 @@ def main() -> None:
     summary = {
         "status": "PASSED",
         "checkpoint_sha256": runtime.runtime.sha256_file(
-            args.checkpoint.resolve()
+            checkpoint_path
         ),
         "source_audit_sha256": sha256_file(args.robustness_audit),
         "long_audit_sha256": sha256_file(args.output),
