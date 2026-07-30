@@ -1,0 +1,62 @@
+{
+  "status": "FROZEN",
+  "hash_salt": "faithrec-mm-evaluation-v1",
+  "selection": {
+    "prompt_development": "all strict-A pairs whose SHA256 user bucket modulo 10 equals 0",
+    "primary_confirmatory": "all remaining strict-A pairs; no user overlaps development",
+    "A_or_B_sensitivity": "A-or-B but not A, excluding strict-A users; 200 user-unique pairs per modality by SHA256 order",
+    "unstable_overconfidence": "A-or-B unstable, excluding all prior users; 400 user-unique pairs by SHA256 order"
+  },
+  "rows": 1470,
+  "unique_users": 1462,
+  "cohort_counts": {
+    "primary_confirmatory": 590,
+    "A_or_B_sensitivity": 400,
+    "unstable_overconfidence": 400,
+    "prompt_development": 80
+  },
+  "label_counts": {
+    "prompt_development": {
+      "strict_A": {
+        "text": 73,
+        "image": 7
+      },
+      "A_or_B": {
+        "text": 73,
+        "image": 7
+      }
+    },
+    "primary_confirmatory": {
+      "strict_A": {
+        "text": 548,
+        "image": 42
+      },
+      "A_or_B": {
+        "text": 548,
+        "image": 42
+      }
+    },
+    "A_or_B_sensitivity": {
+      "strict_A": {
+        "unstable": 400
+      },
+      "A_or_B": {
+        "text": 200,
+        "image": 200
+      }
+    },
+    "unstable_overconfidence": {
+      "strict_A": {
+        "unstable": 400
+      },
+      "A_or_B": {
+        "unstable": 400
+      }
+    }
+  },
+  "inputs": {
+    "labels_sha256": "8057585CEC4815B2E728D6AAC26C09D4AFC4C0C852C3A05916BDFA2683CE86BC",
+    "continuous_sha256": "6802B7D6E465392830351D6A04A4BD38A83472AE6EECF0755B9833D6D3377821"
+  },
+  "output_sha256": "2C45054DEF48F0B967F294CB556FBAA9F34145C88DCF5B0DF88038166358CA6E"
+}
