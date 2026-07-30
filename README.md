@@ -2,7 +2,7 @@
 
 面向多模态推荐解释的模态归因错配审计项目。
 
-当前阶段：Day 6，已完成全量审计的用户聚类 Bootstrap 与多重比较校正。
+当前阶段：Day 7，已完成 zero、mean、permutation 三种统一表示层干预的稳健性审计。
 
 ## 研究问题
 
@@ -61,3 +61,7 @@ Recall@20 0.0933 与 NDCG@20 0.0421。CPU 审计连续两次得到完全相同�
 以用户为单位进行 10,000 次聚类 Bootstrap 和 20,000 次配对符号翻转后，关闭文本与同时
 关闭图文对 NDCG@20 的下降在 Holm 校正后仍稳定，但配对标准化效应均小于 0.04。
 详见 [Day 6 统计完整性检查](./results/day6_clustered_uncertainty.md)。
+
+三种表示层干预均支持文本分支对平均 NDCG 的小幅稳定影响；约 54.34% 的测试样本在三种
+干预下得到一致的非并列模态标签，其余保留为 unstable，不强制分类。详见
+[Day 7 干预稳健性报告](./results/day7_intervention_robustness.md)。
