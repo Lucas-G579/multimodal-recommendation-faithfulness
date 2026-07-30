@@ -2,7 +2,8 @@
 
 面向多模态推荐解释的模态归因错配审计项目。
 
-当前阶段：Day 7，已完成 zero、mean、permutation 三种统一表示层干预的稳健性审计。
+当前阶段：Day 8，已完成 5 个固定 permutation 种子的稳定性审计，并建立
+A/B/unstable 分级标签协议。
 
 ## 研究问题
 
@@ -65,3 +66,8 @@ Recall@20 0.0933 与 NDCG@20 0.0421。CPU 审计连续两次得到完全相同�
 三种表示层干预均支持文本分支对平均 NDCG 的小幅稳定影响；约 54.34% 的测试样本在三种
 干预下得到一致的非并列模态标签，其余保留为 unstable，不强制分类。详见
 [Day 7 干预稳健性报告](./results/day7_intervention_robustness.md)。
+
+进一步使用 5 个预先固定的 permutation 种子复验后，逐样本置换标签的两两一致率仅为
+59.77%–60.94%。因此主分析收紧为 zero、mean 和全部置换种子均一致的 A 级样本：
+3,815 对，占 17.60%；A+B 共 8,521 对，只用于敏感性分析，其余拒绝判断。详见
+[Day 8 多置换种子稳定性报告](./results/day8_permutation_seed_stability.md)。
