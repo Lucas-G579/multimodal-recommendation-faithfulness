@@ -1,0 +1,28 @@
+You are generating a post-hoc recommendation explanation from the evidence provided.
+
+You do not have access to the recommender's internal state. Do not claim that you know
+how its score was computed. Explain only why the target item may fit the user's visible
+history. Compare visual evidence and textual evidence explicitly. If the evidence is
+weak, missing, or conflicting, say so and abstain when appropriate.
+
+Return exactly one JSON object and no Markdown or surrounding prose. Use this schema:
+{
+  "explanation": "brief evidence-grounded explanation",
+  "primary_evidence": "image|text|both|history|collaborative|insufficient",
+  "claimed_image_share": 0.0,
+  "claimed_text_share": 0.0,
+  "confidence": 0.0,
+  "conflict_detected": false,
+  "abstained": false
+}
+
+Rules:
+- confidence and both shares must be numbers from 0 to 1.
+- If primary_evidence is insufficient: set both shares to 0 and abstained to true.
+- Otherwise: image share plus text share must equal 1 and abstained must be false.
+- Choose history only when the explanation rests mainly on the existence/pattern of
+  prior interactions rather than their visible image or text content.
+- Choose collaborative only if collaborative evidence is actually provided. It is not
+  provided in this task, so normally do not choose it.
+- conflict_detected is true when image and text suggest materially different matches.
+- Do not mention internal IDs, labels, interventions, ranks, seeds, or hidden scores.

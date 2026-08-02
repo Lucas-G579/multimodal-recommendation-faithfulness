@@ -1,0 +1,15 @@
+Explain why the TARGET ITEM may suit this user, using only the target and the user's
+visible history supplied with this request.
+
+TARGET TEXT
+Title: {target_title}
+Description: {target_description}
+Target image is supplied as image 1.
+
+USER HISTORY
+{history_text}
+
+Image order: image 1 is the target; subsequent images correspond to history entries
+in the same numbered order. An explicitly missing history image is not supplied.
+
+Return only the required JSON object.

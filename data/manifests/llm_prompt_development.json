@@ -1,0 +1,19 @@
+{
+  "status": "DRY_RUN_PASSED",
+  "protocol_version": "1.1-prompt-v1",
+  "scope": "prompt_development_only",
+  "requests": 80,
+  "confirmatory_requests": 0,
+  "answer_bearing_fragments_found": 0,
+  "image_count": 422,
+  "protocol_hashes": {
+    "system_prompt_sha256": "8873163F235774D0B108F51DED6D9DA577C4BBB50EEDFDCD57828EEACDCC5A99",
+    "user_template_sha256": "95E7524198FA7B94EBC77F3E4857008087864E91F84C8E9BBA470FE312FA0FF7",
+    "response_schema_sha256": "1F85C191406CE34C093AA41F22BA1B2A3E882291DA8FED88D88821C6C71CF2EE"
+  },
+  "inputs": {
+    "samples_sha256": "2C45054DEF48F0B967F294CB556FBAA9F34145C88DCF5B0DF88038166358CA6E",
+    "blind_inputs_sha256": "32042936E05B74B8C513851FCBD51A0F04AE39E7E1D72D259C2BC9414FF95526"
+  },
+  "dry_run_output_sha256": "48E1053BB1FC2C588E6A701B463579BBE705CE3FAE6F7DB5ACEC8675CD99A33F"
+}
