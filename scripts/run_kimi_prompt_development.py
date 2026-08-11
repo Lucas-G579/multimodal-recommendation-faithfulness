@@ -31,6 +31,7 @@ SUMMARY = PROJECT_ROOT / "outputs" / "llm_prompt_development" / "kimi_summary.js
 ENDPOINT = "https://api.moonshot.cn/v1/chat/completions"
 MODEL = "kimi-k2.6"
 MAX_COMPLETION_TOKENS = 512
+PROTOCOL_VERSION = "v1-natural-explanation"
 
 
 def utc_now() -> str:
@@ -85,15 +86,29 @@ def post_json(payload: dict[str, Any], api_key: str, timeout: float) -> dict[str
         return json.loads(response.read().decode("utf-8"))
 
 
-def load_existing(path: Path) -> dict[str, dict[str, Any]]:
+def load_records(path: Path) -> list[dict[str, Any]]:
     if not path.exists():
-        return {}
-    records: dict[str, dict[str, Any]] = {}
+        return []
+    records: list[dict[str, Any]] = []
     with path.open(encoding="utf-8") as handle:
         for line in handle:
-            record = json.loads(line)
-            records[record["sample_id"]] = record
+            records.append(json.loads(line))
     return records
+
+
+def latest_by_sample(records: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    latest: dict[str, dict[str, Any]] = {}
+    for record in records:
+        latest[record["sample_id"]] = record
+    return latest
+
+
+def attempt_counts(records: list[dict[str, Any]]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for record in records:
+        sample_id = record["sample_id"]
+        counts[sample_id] = max(counts.get(sample_id, 0), int(record["attempt"]))
+    return counts
 
 
 def append_record(path: Path, record: dict[str, Any]) -> None:
@@ -106,9 +121,13 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--limit", type=int, required=True)
     parser.add_argument("--timeout", type=float, default=180.0)
+    parser.add_argument("--max-attempts-per-sample", type=int, default=1)
+    parser.add_argument("--continue-after-failure", action="store_true")
     args = parser.parse_args()
     if not 1 <= args.limit <= 80:
         raise ValueError("--limit must be between 1 and 80")
+    if not 1 <= args.max_attempts_per_sample <= 2:
+        raise ValueError("--max-attempts-per-sample must be 1 or 2")
     api_key = os.environ.get("MOONSHOT_API_KEY", "")
     if not api_key:
         raise RuntimeError("MOONSHOT_API_KEY is not present in this process")
@@ -118,10 +137,17 @@ def main() -> None:
     if len(requests) != 80:
         raise ValueError(f"Expected exactly 80 development requests, got {len(requests)}")
 
-    existing = load_existing(OUTPUT)
+    records_before = load_records(OUTPUT)
+    existing = latest_by_sample(records_before)
+    counts_before = attempt_counts(records_before)
     pending = [
         request for request in requests
         if request["sample_id"] not in existing
+        or (
+            existing[request["sample_id"]]["status"] != "valid"
+            and counts_before.get(request["sample_id"], 0)
+            < args.max_attempts_per_sample
+        )
     ][: args.limit]
     if not pending:
         print("No pending development requests within the requested limit.")
@@ -132,71 +158,82 @@ def main() -> None:
         payload_bytes = json.dumps(
             payload, ensure_ascii=False, sort_keys=True
         ).encode("utf-8")
-        started = time.monotonic()
-        record: dict[str, Any] = {
-            "sample_id": request["sample_id"],
-            "status": "api_error",
-            "attempt": 1,
-            "requested_model": MODEL,
-            "returned_model": "",
-            "endpoint": ENDPOINT,
-            "thinking": "disabled",
-            "temperature": "unsupported_by_provider",
-            "seed": "unsupported_by_provider",
-            "max_completion_tokens": MAX_COMPLETION_TOKENS,
-            "request_sha256": hashlib.sha256(payload_bytes).hexdigest().upper(),
-            "request_image_count": len(request["image_paths"]),
-            "started_at_utc": utc_now(),
-            "finished_at_utc": "",
-            "latency_seconds": 0.0,
-            "finish_reason": "",
-            "usage": {},
-            "raw_content": "",
-            "parsed": None,
-            "error_type": "",
-            "error_message": "",
-            "response_id": "",
-        }
-        try:
-            response = post_json(payload, api_key, args.timeout)
-            message = response["choices"][0]["message"]
-            raw_content = message.get("content") or ""
-            record.update(
-                {
-                    "returned_model": response.get("model", ""),
-                    "finish_reason": response["choices"][0].get("finish_reason", ""),
-                    "usage": response.get("usage", {}),
-                    "raw_content": raw_content,
-                    "response_id": response.get("id", ""),
-                }
-            )
+        prior_attempts = counts_before.get(request["sample_id"], 0)
+        record: dict[str, Any] | None = None
+        for attempt in range(prior_attempts + 1, args.max_attempts_per_sample + 1):
+            if attempt > prior_attempts + 1:
+                time.sleep(2)
+            started = time.monotonic()
+            record = {
+                "sample_id": request["sample_id"],
+                "protocol_version": PROTOCOL_VERSION,
+                "status": "api_error",
+                "attempt": attempt,
+                "requested_model": MODEL,
+                "returned_model": "",
+                "endpoint": ENDPOINT,
+                "thinking": "disabled",
+                "temperature": "unsupported_by_provider",
+                "seed": "unsupported_by_provider",
+                "max_completion_tokens": MAX_COMPLETION_TOKENS,
+                "request_sha256": hashlib.sha256(payload_bytes).hexdigest().upper(),
+                "request_image_count": len(request["image_paths"]),
+                "started_at_utc": utc_now(),
+                "finished_at_utc": "",
+                "latency_seconds": 0.0,
+                "finish_reason": "",
+                "usage": {},
+                "raw_content": "",
+                "parsed": None,
+                "error_type": "",
+                "error_message": "",
+                "response_id": "",
+            }
             try:
-                record["parsed"] = parse_response(raw_content)
-                record["status"] = "valid"
-            except ResponseValidationError as error:
-                record["status"] = "schema_invalid"
+                response = post_json(payload, api_key, args.timeout)
+                message = response["choices"][0]["message"]
+                raw_content = message.get("content") or ""
+                record.update(
+                    {
+                        "returned_model": response.get("model", ""),
+                        "finish_reason": response["choices"][0].get("finish_reason", ""),
+                        "usage": response.get("usage", {}),
+                        "raw_content": raw_content,
+                        "response_id": response.get("id", ""),
+                    }
+                )
+                try:
+                    record["parsed"] = parse_response(raw_content)
+                    record["status"] = "valid"
+                except ResponseValidationError as error:
+                    record["status"] = "schema_invalid"
+                    record["error_type"] = type(error).__name__
+                    record["error_message"] = str(error)
+            except urllib.error.HTTPError as error:
+                body = error.read().decode("utf-8", errors="replace")
+                record["error_type"] = f"HTTPError_{error.code}"
+                record["error_message"] = body[:1000]
+            except Exception as error:
                 record["error_type"] = type(error).__name__
-                record["error_message"] = str(error)
-        except urllib.error.HTTPError as error:
-            body = error.read().decode("utf-8", errors="replace")
-            record["error_type"] = f"HTTPError_{error.code}"
-            record["error_message"] = body[:1000]
-        except Exception as error:
-            record["error_type"] = type(error).__name__
-            record["error_message"] = str(error)[:1000]
-        finally:
-            record["finished_at_utc"] = utc_now()
-            record["latency_seconds"] = round(time.monotonic() - started, 6)
-            append_record(OUTPUT, record)
-        print(
-            f"completed={index}/{len(pending)} sample_id={record['sample_id']} "
-            f"status={record['status']}",
-            flush=True,
-        )
-        if record["status"] != "valid":
+                record["error_message"] = str(error)[:1000]
+            finally:
+                record["finished_at_utc"] = utc_now()
+                record["latency_seconds"] = round(time.monotonic() - started, 6)
+                append_record(OUTPUT, record)
+            print(
+                f"sample={index}/{len(pending)} attempt={attempt}/"
+                f"{args.max_attempts_per_sample} sample_id={record['sample_id']} "
+                f"status={record['status']}",
+                flush=True,
+            )
+            if record["status"] == "valid":
+                break
+        assert record is not None
+        if record["status"] != "valid" and not args.continue_after_failure:
             raise SystemExit(2)
 
-    all_records = load_existing(OUTPUT)
+    all_attempts = load_records(OUTPUT)
+    all_records = latest_by_sample(all_attempts)
     statuses: dict[str, int] = {}
     for record in all_records.values():
         statuses[record["status"]] = statuses.get(record["status"], 0) + 1
@@ -204,7 +241,10 @@ def main() -> None:
     summary = {
         "status": "DEVELOPMENT_IN_PROGRESS",
         "model": MODEL,
+        "protocol_version": PROTOCOL_VERSION,
         "records": len(all_records),
+        "attempt_records": len(all_attempts),
+        "max_attempts_per_sample": args.max_attempts_per_sample,
         "status_counts": statuses,
         "usage_totals": {
             field: sum(int(record.get("usage", {}).get(field, 0) or 0) for record in all_records.values())

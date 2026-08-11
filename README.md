@@ -94,3 +94,9 @@ LLM 提示词、严格 JSON 响应契约和开发集 dry-run 已完成。80 条�
 张图片，未组装任何正式确认集请求，未发现答案字段或缺失图片路径；解析器 7 项
 单元测试全部通过。当前尚未配置具体多模态模型和 API 预算，因此没有发送真实请求。
 详见 [Day 12 提示词开发 dry-run](./results/day12_prompt_development_dry_run.md)。
+
+Kimi `kimi-k2.6` 已完成全部 80 条开发样本：74 条严格有效、5 条永久网络失败、1 条
+永久 schema 失败。自然解释提示 v1 的有效回答中 65/74 选择 `both`、0 条选择
+`image`，意向分析宏平均召回率仅 2.74%，因此 v1 被明确禁止进入确认集。强制选择
+image/text 的 v2 已完成无标签 dry-run 和协议测试，但尚未产生 API 结果。详见
+[Day 13 Kimi 开发集分析](./results/day13_kimi_prompt_development_analysis.md)。

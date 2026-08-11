@@ -1,0 +1,58 @@
+{
+  "status": "ANALYZED_DEVELOPMENT_ONLY",
+  "scope": {
+    "development_samples": 80,
+    "confirmatory_samples": 0,
+    "attempt_records": 92
+  },
+  "completion": {
+    "final_status_counts": {
+      "valid": 74,
+      "api_error": 5,
+      "schema_invalid": 1
+    },
+    "retry_samples": 12,
+    "retry_recovered": 6,
+    "retry_recovery_rate": 0.5,
+    "permanent_failures": 6,
+    "permanent_failure_types": {
+      "URLError": 5,
+      "ResponseValidationError": 1
+    }
+  },
+  "predictions_valid_only": {
+    "both": 65,
+    "history": 5,
+    "text": 4
+  },
+  "intention_to_treat": {
+    "accuracy": 0.05,
+    "text_recall": 0.0547945205479452,
+    "image_recall": 0.0,
+    "macro_recall": 0.0273972602739726,
+    "high_confidence_wrong_count": 51,
+    "high_confidence_wrong_rate": 0.6375
+  },
+  "valid_only": {
+    "accuracy": 0.05405405405405406,
+    "mean_confidence": 0.8083783783783783,
+    "spearman_text_share_vs_contrast": -0.04533676013513263
+  },
+  "usage_latest_success_or_failure": {
+    "prompt_tokens": 92252,
+    "completion_tokens": 16760,
+    "total_tokens": 109012,
+    "cached_tokens": 25990
+  },
+  "usage_all_attempts": {
+    "prompt_tokens": 97813,
+    "completion_tokens": 17925,
+    "total_tokens": 115738,
+    "cached_tokens": 27342
+  },
+  "protocol_implication": "Prompt v1 is not eligible for confirmatory use: 65/74 valid outputs selected both and no valid output selected image.",
+  "inputs": {
+    "responses_sha256": "6394A8E0A27E53695405406C17E2A17E1E05BEA830EDC6FBFF7796CB5DBB8DF9",
+    "samples_sha256": "2C45054DEF48F0B967F294CB556FBAA9F34145C88DCF5B0DF88038166358CA6E"
+  }
+}
