@@ -19,6 +19,7 @@ runner.SUMMARY = (
 runner.PROTOCOL_VERSION = "v2-forced-choice"
 runner.parse_response = protocol_v2.parse_response
 runner.protocol_hashes = protocol_v2.protocol_hashes
+runner.ResponseValidationError = protocol_v2.ResponseValidationError
 
 
 if __name__ == "__main__":

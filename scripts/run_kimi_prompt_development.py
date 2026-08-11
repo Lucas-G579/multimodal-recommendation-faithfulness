@@ -32,6 +32,9 @@ ENDPOINT = "https://api.moonshot.cn/v1/chat/completions"
 MODEL = "kimi-k2.6"
 MAX_COMPLETION_TOKENS = 512
 PROTOCOL_VERSION = "v1-natural-explanation"
+EXPECTED_REQUESTS = 80
+MAX_SAMPLE_LIMIT = 80
+EXPERIMENT_SCOPE = "prompt_development"
 
 
 def utc_now() -> str:
@@ -124,8 +127,8 @@ def main() -> None:
     parser.add_argument("--max-attempts-per-sample", type=int, default=1)
     parser.add_argument("--continue-after-failure", action="store_true")
     args = parser.parse_args()
-    if not 1 <= args.limit <= 80:
-        raise ValueError("--limit must be between 1 and 80")
+    if not 1 <= args.limit <= MAX_SAMPLE_LIMIT:
+        raise ValueError(f"--limit must be between 1 and {MAX_SAMPLE_LIMIT}")
     if not 1 <= args.max_attempts_per_sample <= 2:
         raise ValueError("--max-attempts-per-sample must be 1 or 2")
     api_key = os.environ.get("MOONSHOT_API_KEY", "")
@@ -134,8 +137,10 @@ def main() -> None:
 
     with REQUESTS.open(encoding="utf-8") as handle:
         requests = [json.loads(line) for line in handle]
-    if len(requests) != 80:
-        raise ValueError(f"Expected exactly 80 development requests, got {len(requests)}")
+    if len(requests) != EXPECTED_REQUESTS:
+        raise ValueError(
+            f"Expected exactly {EXPECTED_REQUESTS} requests, got {len(requests)}"
+        )
 
     records_before = load_records(OUTPUT)
     existing = latest_by_sample(records_before)
@@ -167,6 +172,7 @@ def main() -> None:
             record = {
                 "sample_id": request["sample_id"],
                 "protocol_version": PROTOCOL_VERSION,
+                "experiment_scope": EXPERIMENT_SCOPE,
                 "status": "api_error",
                 "attempt": attempt,
                 "requested_model": MODEL,
@@ -242,6 +248,7 @@ def main() -> None:
         "status": "DEVELOPMENT_IN_PROGRESS",
         "model": MODEL,
         "protocol_version": PROTOCOL_VERSION,
+        "experiment_scope": EXPERIMENT_SCOPE,
         "records": len(all_records),
         "attempt_records": len(all_attempts),
         "max_attempts_per_sample": args.max_attempts_per_sample,

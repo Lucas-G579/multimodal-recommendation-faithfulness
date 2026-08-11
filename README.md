@@ -100,3 +100,8 @@ Kimi `kimi-k2.6` 已完成全部 80 条开发样本：74 条严格有效、5 条
 `image`，意向分析宏平均召回率仅 2.74%，因此 v1 被明确禁止进入确认集。强制选择
 image/text 的 v2 已完成无标签 dry-run 和协议测试，但尚未产生 API 结果。详见
 [Day 13 Kimi 开发集分析](./results/day13_kimi_prompt_development_analysis.md)。
+
+强制选择提示词 v2 在相同开发集上得到 72.02% 的 ITT 宏平均召回率，text/image
+召回率分别为 72.60%/71.43%，没有退化为多数类恒猜；提示词、schema 和运行参数现已
+冻结，不再构造 v3。590 条确认集只完成离线无标签请求准备，尚未发送。详见
+[Day 14 Kimi v2 开发验证与冻结](./results/day14_kimi_prompt_v2_validation.md)。
