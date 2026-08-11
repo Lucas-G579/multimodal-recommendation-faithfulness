@@ -107,3 +107,5 @@ image/text 的 v2 已完成无标签 dry-run 和协议测试，但尚未产生 A
 [Day 14 Kimi v2 开发验证与冻结](./results/day14_kimi_prompt_v2_validation.md)。
 
 Kimi v2 的 590 条一次性正式确认实验已完成。ITT 宏平均召回率为 48.31%（用户聚类 bootstrap 95% CI 41.64%–55.59%），text/image 召回率为 70.44%/26.19%；结果没有证明模型能可靠识别主要证据模态。详见 [Day 15 Kimi v2 正式确认实验](./results/day15_kimi_confirmatory_evaluation.md)。
+
+冻结后的事后误差审计表明：开发集和正式集的干预强度、波动及有效率接近，下降主要来自开发集仅 7 个 image 真值造成的乐观小样本估计；正式集的 image 召回在四个证据强度层均只有 20%–30%。该结果仅作探索性机制诊断。详见 [Day 16 Kimi v2 事后误差审计](./results/day16_kimi_v2_posthoc_error_audit.md)。
