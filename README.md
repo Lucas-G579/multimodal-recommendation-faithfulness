@@ -1,119 +1,177 @@
+<div align="center">
+
 # FaithRec-MM
 
-项目主页：https://lucas-g579.github.io/multimodal-recommendation-faithfulness/
+### 多模态推荐解释忠实性审计
 
-面向多模态推荐解释的模态归因错配审计项目。
+**模型解释说它依赖了图片或文字——行为干预证据真的支持这个说法吗？**
 
-当前阶段：Day 10，已完成 seed=999、2026、3407 三个 MGCN 的跨训练种子逐样本干预
-审计，并得到严格主集与敏感性集。
+[![Research Stage](https://img.shields.io/badge/stage-Day%2019-2155d6)](./results/day19_selective_agreement_ab_validation.md)
+[![Protocol Tests](https://img.shields.io/badge/tests-13%2F13%20passing-1d8062)](./tests)
+[![Pages](https://github.com/Lucas-G579/multimodal-recommendation-faithfulness/actions/workflows/pages.yml/badge.svg)](https://lucas-g579.github.io/multimodal-recommendation-faithfulness/)
+[![Python](https://img.shields.io/badge/python-3.11-3776ab)](https://www.python.org/)
+
+[项目主页](https://lucas-g579.github.io/multimodal-recommendation-faithfulness/) ·
+[正式确认报告](./results/day15_kimi_confirmatory_evaluation.md) ·
+[非 LLM 基线](./results/day17_non_llm_modality_baselines.md) ·
+[独立敏感性验证](./results/day19_selective_agreement_ab_validation.md)
+
+</div>
+
+---
+
+## 当前状态
+
+项目已推进至 **Day 19**，完成了从推荐模型复现、跨训练种子行为干预、LLM 盲评预注册，到一次性正式确认实验及独立敏感性验证的完整链路。
+
+当前最重要的结论是：
+
+> Kimi v2 的流畅、高置信多模态解释，没有可靠识别 MGCN 实际依赖的主要模态；一个无需生成文本、只比较图文历史相似度的确定性基线，反而取得更好的类别平衡忠实性。
+
+严格确认实验的结论保持冻结；Day 16 之后的方法比较均明确标记为事后探索或独立敏感性验证，不反向修改正式结果。
+
+## 核心结果
+
+### 1. 一次性正式确认实验
+
+590 条严格 A 级样本、583 位用户；提示词、模型、schema、重试和评分规则均在运行前冻结。
+
+| 方法 | Accuracy | Text Recall | Image Recall | Macro Recall |
+|---|---:|---:|---:|---:|
+| Majority Text | **92.88%** | 100.00% | 0.00% | 50.00% |
+| Kimi v2 | 67.29% | 70.44% | 26.19% | **48.31%** |
+| Mean Percentile¹ | 63.05% | 62.96% | 64.29% | **63.62%** |
+| Max Percentile¹ | 75.59% | 77.19% | 54.76% | **65.98%** |
+
+¹ 非 LLM 基线在确认集解盲后设计，属于事后探索，不能替代 Kimi v2 的一次性确认结论。
+
+- Kimi v2 宏召回：**48.31%**，用户级 Bootstrap 95% CI **41.64%–55.59%**。
+- Kimi v2 只识别出 **11/42** 个 image 真值，并产生 **133** 个置信度 ≥ 0.8 的错误回答。
+- Mean Percentile 相对 Kimi 的宏召回配对提升：**+15.31 个百分点**，95% CI **+5.34 至 +24.87**。
+
+<p align="center">
+  <img src="./results/figures/day18_macro_recall_comparison.png" width="820" alt="Kimi 与非 LLM 基线的宏平均召回比较">
+</p>
+
+### 2. 独立 A+B 敏感性验证
+
+400 条此前未使用的样本，text/image 各 200 条；400 位用户与其他 cohort 完全隔离。
+
+| 方法 | 覆盖率 | Macro Recall | 用户 Bootstrap 95% CI |
+|---|---:|---:|---:|
+| Full Mean | 100% | 52.50% | 47.62%–57.38% |
+| Mean/Max 一致才回答 | 65.25% | 57.76% | 51.95%–63.58% |
+| Full Max | 100% | **57.25%** | **52.50%–62.06%** |
+
+预先冻结的选择预测通过了“覆盖率 ≥ 50% 且宏召回区间下界 > 50%”双重门槛；但 Full Max 无需拒答即可获得相近结果，因此一致性是有效风险信号，尚未证明是更实用的最终策略。
 
 ## 研究问题
 
-多模态推荐模型实际依赖的图片、文本和协同信号，与 LLM 解释声称使用的证据是否一致？
+多模态推荐模型实际依赖的图像、文本和协同信号，与 LLM 解释声称使用的证据是否一致？
 
-## 环境
+本项目将“解释忠实性”拆成两个可审计对象：
+
+1. **行为真值**：关闭、均值替换或置换图像/文本分支，观察推荐分数与排名变化。
+2. **解释声明**：让多模态 LLM 在看不到干预标签的条件下，判断主要证据来自图像还是文本。
+
+两者一致才构成模态归因忠实性。
+
+## 方法概览
+
+```text
+MGCN / Baby 复现
+        ↓
+zero · mean · 5× permutation 干预
+        ↓
+3 个训练种子交叉稳定性筛选
+        ↓
+严格 A 级行为真值 + A+B 敏感性集
+        ↓
+无答案字段的图文盲输入
+        ↓
+Kimi v2 一次性确认 + 非 LLM 基线审计
+```
+
+关键防泄漏措施：
+
+- 提示词开发集、正式确认集、A+B 敏感性集和 unstable 压力集按用户完全隔离。
+- 正式请求不包含 label、cohort、contrast、rank change、训练种子等答案字段。
+- 永久 API/schema 失败在主分析中按错误计入，不做选择性删除。
+- 主要协议在查看相应模型结果前提交并记录哈希。
+
+## 可复现性
+
+### 环境
 
 - Windows 10/11
 - Python 3.11
-- PyTorch 2.3.0+cu121
+- PyTorch 2.3.0 + CUDA 12.1
 - NVIDIA RTX 4050 Laptop GPU（6 GB VRAM）
 
-## 目录
-
-- `docs/`：研究协议、复现笔记与失败日志
-- `external/`：外部研究代码，不纳入当前仓库
-- `scripts/`：环境检查和可复现实验入口
-- `configs/`：后续固定的数据、模型和审计配置
-- `results/`：可提交的小型汇总结果
-- `outputs/`：训练输出与 checkpoint，不提交
-- `patches/`：对上游代码的最小可审计补丁
-
-完整路线见 [暑期两个月执行方案.md](./暑期两个月执行方案.md)。
-
-## 本地快速验证
+### 协议测试
 
 ```powershell
-.\.venv\Scripts\python.exe .\scripts\check_environment.py
-.\.venv\Scripts\python.exe .\scripts\summarize_interactions.py .\external\MMRec\data\baby\baby.inter
-.\.venv\Scripts\python.exe .\scripts\inspect_mmrec_features.py `
-  --interactions .\external\MMRec\data\baby\baby.inter `
-  --image .\external\MMRec\data\baby\image_feat.npy `
-  --text .\external\MMRec\data\baby\text_feat.npy
-.\.venv\Scripts\python.exe .\scripts\run_mmrec_smoke.py --model LightGCN --profile smoke
-.\.venv\Scripts\python.exe .\scripts\run_mmrec_smoke.py --model BM3 --profile smoke
+.\.venv\Scripts\python.exe -m unittest discover -s .\tests -p "test_*.py" -v
 ```
 
-LightGCN 和 BM3 的单 epoch 结果只用于管线 smoke test，不得作为正式基线引用。
+当前结果：**13/13 tests passing**。
 
-BM3 / Baby 正式复现结果：Recall@20 0.0862、NDCG@20 0.0369，相对 MMRec
-发布日志的差异均小于 5%。详见 [Day 2 复现报告](./results/day2_bm3_reproduction.md)。
+### 关键分析入口
 
-BM3 checkpoint 恢复后的 32 个验证/测试指标与存档完全一致。推理路径审计同时确认：
-BM3 的图像和文本只在训练损失中发挥作用，训练后直接清零模态不是有效的依赖测量方法。
-详见 [Day 3 审计报告](./results/day3_checkpoint_and_path_audit.md)。
+```powershell
+# Kimi v2 正式确认结果分析
+python .\scripts\analyze_kimi_confirmatory_v2.py
 
-MGCN / Baby 正式结果为 Recall@20 0.0933、NDCG@20 0.0421，与论文结果的相对差异
-均小于 5%；checkpoint 的 32 个验证/测试指标恢复后完全一致。固定 32 位用户的资格探针
-确认图像和文本分支均会改变推荐分数及排名。详见
-[Day 4 MGCN 资格报告](./results/day4_mgcn_qualification.md)。
+# Day 16 事后误差审计
+python .\scripts\analyze_kimi_v2_posthoc_errors.py
 
-全量行为审计覆盖 19,445 位用户和 21,682 个测试用户—商品对，可以从输出表精确还原
-Recall@20 0.0933 与 NDCG@20 0.0421。CPU 审计连续两次得到完全相同的 CSV SHA-256。
-详见 [Day 5 全量行为审计](./results/day5_full_behavior_audit.md)。
+# Day 17 非 LLM 基线
+python .\scripts\evaluate_non_llm_modality_baselines.py
 
-以用户为单位进行 10,000 次聚类 Bootstrap 和 20,000 次配对符号翻转后，关闭文本与同时
-关闭图文对 NDCG@20 的下降在 Holm 校正后仍稳定，但配对标准化效应均小于 0.04。
-详见 [Day 6 统计完整性检查](./results/day6_clustered_uncertainty.md)。
+# Day 18 机制审计与论文图
+python .\scripts\analyze_mean_percentile_mechanism.py
 
-三种表示层干预均支持文本分支对平均 NDCG 的小幅稳定影响；约 54.34% 的测试样本在三种
-干预下得到一致的非并列模态标签，其余保留为 unstable，不强制分类。详见
-[Day 7 干预稳健性报告](./results/day7_intervention_robustness.md)。
+# Day 19 独立 A+B 敏感性验证
+python .\scripts\validate_selective_agreement_ab.py
+```
 
-进一步使用 5 个预先固定的 permutation 种子复验后，逐样本置换标签的两两一致率仅为
-59.77%–60.94%。因此主分析收紧为 zero、mean 和全部置换种子均一致的 A 级样本：
-3,815 对，占 17.60%；A+B 共 8,521 对，只用于敏感性分析，其余拒绝判断。详见
-[Day 8 多置换种子稳定性报告](./results/day8_permutation_seed_stability.md)。
+原始训练输出、checkpoint 和 API 响应位于 `outputs/`，默认不提交 Git；仓库只保留协议、代码、聚合统计、图表与可审计哈希。
 
-两个预注册的新训练种子 2026、3407 均正常完成并通过 checkpoint 严格恢复，32 项
-验证/测试指标与存档值零误差。三个种子的测试 Recall@20 为 0.0926–0.0934，
-NDCG@20 为 0.0414–0.0421。详见
-[Day 9 跨训练种子协议与结果](./results/day9_training_seed_protocol.md)。
+## 实验进度与报告
 
-三个模型分别经过 zero、mean 和 5 个固定 permutation 种子筛选后，只有 670/21,682
-条样本在三个训练种子中都达到 A 级且模态标签一致，占 3.09%（文本 621、图像 49）。
-A+B 敏感性集为 1,824 条，占 8.41%。详见
-[Day 10 跨训练种子稳定性报告](./results/day10_cross_training_seed_stability.md)。
+| 阶段 | 内容 | 报告 |
+|---|---|---|
+| Day 1–3 | 环境、BM3 复现、checkpoint 与推理路径审计 | [Day 1](./results/day1_smoke_test.md) · [Day 2](./results/day2_bm3_reproduction.md) · [Day 3](./results/day3_checkpoint_and_path_audit.md) |
+| Day 4–6 | MGCN 资格、全量行为审计、聚类不确定性 | [Day 4](./results/day4_mgcn_qualification.md) · [Day 5](./results/day5_full_behavior_audit.md) · [Day 6](./results/day6_clustered_uncertainty.md) |
+| Day 7–10 | 多干预、多置换种子、跨训练种子稳定性 | [Day 7](./results/day7_intervention_robustness.md) · [Day 8](./results/day8_permutation_seed_stability.md) · [Day 9](./results/day9_training_seed_protocol.md) · [Day 10](./results/day10_cross_training_seed_stability.md) |
+| Day 11–14 | LLM 预注册、盲输入、提示词开发与冻结 | [Day 11](./results/day11_llm_evaluation_preregistration.md) · [Day 12](./results/day12_prompt_development_dry_run.md) · [Day 13](./results/day13_kimi_prompt_development_analysis.md) · [Day 14](./results/day14_kimi_prompt_v2_validation.md) |
+| Day 15 | Kimi v2 一次性正式确认实验 | [正式报告](./results/day15_kimi_confirmatory_evaluation.md) |
+| Day 16 | 冻结后的失败机制审计 | [误差审计](./results/day16_kimi_v2_posthoc_error_audit.md) |
+| Day 17 | 确定性非 LLM 模态归因基线 | [基线报告](./results/day17_non_llm_modality_baselines.md) |
+| Day 18 | Mean/Max 机制审计与论文图 | [机制报告](./results/day18_mean_percentile_mechanism.md) |
+| Day 19 | 用户隔离的独立 A+B 敏感性验证 | [验证报告](./results/day19_selective_agreement_ab_validation.md) |
 
-LLM 解释评测已经在看到任何模型回答前冻结：80 条只用于提示词开发，590 条严格
-A 级样本用于确认性检验，另有 400 条 A+B 敏感性样本和 400 条不稳定证据压力样本。
-四组按用户隔离，连续两次生成的样本表 SHA-256 完全一致。7,050 个商品映射已经
-恢复；目标图片覆盖率 100%，加入最多 5 条训练历史后的相关商品图片覆盖率为
-99.91%。不含答案字段的盲输入也已通过确定性复现，因此下一步可以只在开发集调试
-提示词；正式确认集仍未查看、尚未调用 LLM。详见
-[Day 11 LLM 解释忠实性评测预注册](./results/day11_llm_evaluation_preregistration.md)。
+## 仓库结构
 
-LLM 提示词、严格 JSON 响应契约和开发集 dry-run 已完成。80 条开发请求共引用 422
-张图片，未组装任何正式确认集请求，未发现答案字段或缺失图片路径；解析器 7 项
-单元测试全部通过。当前尚未配置具体多模态模型和 API 预算，因此没有发送真实请求。
-详见 [Day 12 提示词开发 dry-run](./results/day12_prompt_development_dry_run.md)。
+```text
+configs/          固定实验配置
+data/manifests/   样本、协议与机器可读聚合结果
+docs/             预注册协议、复现笔记与失败日志
+patches/          对上游 MMRec 的最小可审计补丁
+results/          Day 1–19 报告与论文图
+scripts/          数据、训练、审计与统计入口
+site/             GitHub Pages 项目展示页
+tests/            LLM 响应协议测试
+```
 
-Kimi `kimi-k2.6` 已完成全部 80 条开发样本：74 条严格有效、5 条永久网络失败、1 条
-永久 schema 失败。自然解释提示 v1 的有效回答中 65/74 选择 `both`、0 条选择
-`image`，意向分析宏平均召回率仅 2.74%，因此 v1 被明确禁止进入确认集。强制选择
-image/text 的 v2 已完成无标签 dry-run 和协议测试，但尚未产生 API 结果。详见
-[Day 13 Kimi 开发集分析](./results/day13_kimi_prompt_development_analysis.md)。
+## 结果解释边界
 
-强制选择提示词 v2 在相同开发集上得到 72.02% 的 ITT 宏平均召回率，text/image
-召回率分别为 72.60%/71.43%，没有退化为多数类恒猜；提示词、schema 和运行参数现已
-冻结，不再构造 v3。590 条确认集只完成离线无标签请求准备，尚未发送。详见
-[Day 14 Kimi v2 开发验证与冻结](./results/day14_kimi_prompt_v2_validation.md)。
+- Day 15 是当前唯一的严格 LLM 确认性结论。
+- Day 16–18 使用已经解盲的正式集，均为事后探索。
+- Day 19 是独立 A+B 敏感性验证，但标签稳定性低于严格 A 级。
+- 当前结果来自 MGCN / Baby，尚不能直接外推到其他推荐模型或数据集。
+- Full Max 是下一阶段候选方法，不是已经完成严格 A 级独立确认的最终方法。
 
-Kimi v2 的 590 条一次性正式确认实验已完成。ITT 宏平均召回率为 48.31%（用户聚类 bootstrap 95% CI 41.64%–55.59%），text/image 召回率为 70.44%/26.19%；结果没有证明模型能可靠识别主要证据模态。详见 [Day 15 Kimi v2 正式确认实验](./results/day15_kimi_confirmatory_evaluation.md)。
+## 致谢与上游
 
-冻结后的事后误差审计表明：开发集和正式集的干预强度、波动及有效率接近，下降主要来自开发集仅 7 个 image 真值造成的乐观小样本估计；正式集的 image 召回在四个证据强度层均只有 20%–30%。该结果仅作探索性机制诊断。详见 [Day 16 Kimi v2 事后误差审计](./results/day16_kimi_v2_posthoc_error_audit.md)。
-
-不调用生成式模型的 Mean Percentile 相似度基线在正式集取得 63.62% 宏召回（用户聚类 bootstrap 95% CI 56.13%–71.00%），相对 Kimi v2 的配对提升为 15.31 个百分点（95% CI +5.34 至 +24.87）。该比较在确认集解盲后设计，明确作为探索性结果。详见 [Day 17 非 LLM 模态归因基线](./results/day17_non_llm_modality_baselines.md)。
-
-机制审计发现 Mean 与 Max 聚合规则一致的 420/590 条样本上，宏召回达到 72.91%；不一致的 170 条仅为 42.00%。规则一致性因而是一个值得在新数据验证的无标签风险信号，但当前仍属于事后发现。四张论文级主图与完整案例审计见 [Day 18 机制审计与论文图](./results/day18_mean_percentile_mechanism.md)。
-
-Mean/Max 一致性规则随后在 400 条用户完全隔离、text/image 平衡的 A+B 敏感性样本上通过预定双重门槛：覆盖率 65.25%，已回答宏召回 57.76%（95% CI 51.95%–63.58%）。同时，Full Max 无需拒答便达到 57.25%（95% CI 52.50%–62.06%），因此一致性是有效风险信号，但尚未证明比直接使用 Max 更实用。详见 [Day 19 独立 A+B 验证](./results/day19_selective_agreement_ab_validation.md)。
+推荐模型复现基于 [MMRec](https://github.com/enoche/MMRec)。项目保留上游代码快照、最小补丁、数据哈希和失败日志，以支持独立审计。
