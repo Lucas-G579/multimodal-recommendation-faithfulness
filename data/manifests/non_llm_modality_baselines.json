@@ -1,0 +1,339 @@
+{
+  "status": "POSTHOC_EXPLORATORY_COMPLETE",
+  "protocol_commit": "eefcfca",
+  "primary_baseline": "mean_percentile",
+  "cohorts": {
+    "primary_confirmatory": {
+      "mean_percentile": {
+        "accuracy": 0.6305084745762712,
+        "text_recall": 0.6295620437956204,
+        "image_recall": 0.6428571428571429,
+        "macro_recall": 0.6362095933263816,
+        "prediction_image_rate": 0.3898305084745763,
+        "confusion": {
+          "image": {
+            "image": 27,
+            "text": 15
+          },
+          "text": {
+            "image": 203,
+            "text": 345
+          }
+        }
+      },
+      "max_percentile": {
+        "accuracy": 0.7559322033898305,
+        "text_recall": 0.7718978102189781,
+        "image_recall": 0.5476190476190477,
+        "macro_recall": 0.6597584289190128,
+        "prediction_image_rate": 0.25084745762711863,
+        "confusion": {
+          "image": {
+            "image": 23,
+            "text": 19
+          },
+          "text": {
+            "image": 125,
+            "text": 423
+          }
+        }
+      },
+      "majority_text": {
+        "accuracy": 0.9288135593220339,
+        "text_recall": 1.0,
+        "image_recall": 0.0,
+        "macro_recall": 0.5,
+        "prediction_image_rate": 0.0,
+        "confusion": {
+          "image": {
+            "text": 42
+          },
+          "text": {
+            "text": 548
+          }
+        }
+      },
+      "seed_999_reference": {
+        "accuracy": 1.0,
+        "text_recall": 1.0,
+        "image_recall": 1.0,
+        "macro_recall": 1.0,
+        "prediction_image_rate": 0.0711864406779661,
+        "confusion": {
+          "image": {
+            "image": 42,
+            "text": 0
+          },
+          "text": {
+            "image": 0,
+            "text": 548
+          }
+        }
+      },
+      "label_identity": {
+        "accuracy": 1.0,
+        "text_recall": 1.0,
+        "image_recall": 1.0,
+        "macro_recall": 1.0,
+        "prediction_image_rate": 0.0711864406779661,
+        "confusion": {
+          "image": {
+            "image": 42,
+            "text": 0
+          },
+          "text": {
+            "image": 0,
+            "text": 548
+          }
+        }
+      },
+      "kimi": {
+        "accuracy": 0.6728813559322034,
+        "text_recall": 0.7043795620437956,
+        "image_recall": 0.2619047619047619,
+        "macro_recall": 0.4831421619742787,
+        "prediction_image_rate": 0.2271186440677966,
+        "confusion": {
+          "image": {
+            "image": 11,
+            "invalid": 4,
+            "text": 27
+          },
+          "text": {
+            "image": 123,
+            "invalid": 39,
+            "text": 386
+          }
+        }
+      }
+    },
+    "prompt_development": {
+      "mean_percentile": {
+        "accuracy": 0.675,
+        "text_recall": 0.6712328767123288,
+        "image_recall": 0.7142857142857143,
+        "macro_recall": 0.6927592954990216,
+        "prediction_image_rate": 0.3625,
+        "confusion": {
+          "image": {
+            "image": 5,
+            "text": 2
+          },
+          "text": {
+            "image": 24,
+            "text": 49
+          }
+        }
+      },
+      "max_percentile": {
+        "accuracy": 0.675,
+        "text_recall": 0.6712328767123288,
+        "image_recall": 0.7142857142857143,
+        "macro_recall": 0.6927592954990216,
+        "prediction_image_rate": 0.3625,
+        "confusion": {
+          "image": {
+            "image": 5,
+            "text": 2
+          },
+          "text": {
+            "image": 24,
+            "text": 49
+          }
+        }
+      },
+      "majority_text": {
+        "accuracy": 0.9125,
+        "text_recall": 1.0,
+        "image_recall": 0.0,
+        "macro_recall": 0.5,
+        "prediction_image_rate": 0.0,
+        "confusion": {
+          "image": {
+            "text": 7
+          },
+          "text": {
+            "text": 73
+          }
+        }
+      },
+      "seed_999_reference": {
+        "accuracy": 1.0,
+        "text_recall": 1.0,
+        "image_recall": 1.0,
+        "macro_recall": 1.0,
+        "prediction_image_rate": 0.0875,
+        "confusion": {
+          "image": {
+            "image": 7,
+            "text": 0
+          },
+          "text": {
+            "image": 0,
+            "text": 73
+          }
+        }
+      },
+      "label_identity": {
+        "accuracy": 1.0,
+        "text_recall": 1.0,
+        "image_recall": 1.0,
+        "macro_recall": 1.0,
+        "prediction_image_rate": 0.0875,
+        "confusion": {
+          "image": {
+            "image": 7,
+            "text": 0
+          },
+          "text": {
+            "image": 0,
+            "text": 73
+          }
+        }
+      },
+      "kimi": {
+        "accuracy": 0.725,
+        "text_recall": 0.726027397260274,
+        "image_recall": 0.7142857142857143,
+        "macro_recall": 0.7201565557729941,
+        "prediction_image_rate": 0.25,
+        "confusion": {
+          "image": {
+            "image": 5,
+            "invalid": 0,
+            "text": 2
+          },
+          "text": {
+            "image": 15,
+            "invalid": 5,
+            "text": 53
+          }
+        }
+      }
+    }
+  },
+  "confirmatory_cluster_bootstrap": {
+    "mean_percentile": {
+      "accuracy_95ci": [
+        0.5911413969335605,
+        0.6694915254237288
+      ],
+      "macro_recall_95ci": [
+        0.5613104378984597,
+        0.7100235482119622
+      ]
+    },
+    "max_percentile": {
+      "accuracy_95ci": [
+        0.7205387205387206,
+        0.7908163265306123
+      ],
+      "macro_recall_95ci": [
+        0.5819436129630134,
+        0.7364550726445095
+      ]
+    },
+    "majority_text": {
+      "accuracy_95ci": [
+        0.9077174754775427,
+        0.9489795918367347
+      ],
+      "macro_recall_95ci": [
+        0.5,
+        0.5
+      ]
+    },
+    "seed_999_reference": {
+      "accuracy_95ci": [
+        1.0,
+        1.0
+      ],
+      "macro_recall_95ci": [
+        1.0,
+        1.0
+      ]
+    },
+    "label_identity": {
+      "accuracy_95ci": [
+        1.0,
+        1.0
+      ],
+      "macro_recall_95ci": [
+        1.0,
+        1.0
+      ]
+    },
+    "kimi": {
+      "accuracy_95ci": [
+        0.6355892501371524,
+        0.7102221071284873
+      ],
+      "macro_recall_95ci": [
+        0.41644662674189137,
+        0.5558712404923714
+      ]
+    },
+    "paired_deltas": {
+      "mean_minus_kimi_accuracy": {
+        "estimate": -0.0423728813559322,
+        "95ci": [
+          -0.09830508474576272,
+          0.013559322033898313
+        ]
+      },
+      "mean_minus_kimi_macro": {
+        "estimate": 0.15306743135210288,
+        "95ci": [
+          0.05343820469983232,
+          0.24872693875346097
+        ]
+      },
+      "mean_minus_majority_macro": {
+        "estimate": 0.1362095933263816,
+        "95ci": [
+          0.06131043789845969,
+          0.21002354821196226
+        ]
+      }
+    }
+  },
+  "bootstrap": {
+    "unit": "user_id",
+    "iterations": 10000,
+    "seed": 20260811
+  },
+  "integrity": {
+    "evaluated_samples": 670,
+    "unique_targets": 507,
+    "feature_shapes": {
+      "image": [
+        7050,
+        4096
+      ],
+      "text": [
+        7050,
+        384
+      ]
+    },
+    "zero_norm_vectors": {
+      "image": 0,
+      "text": 0
+    },
+    "missing_image_history_entries": 1,
+    "missing_text_history_entries": 1,
+    "mean_percentile_ties": 0,
+    "max_percentile_ties": 10,
+    "compute_backend": {
+      "image": "cpu",
+      "text": "cpu"
+    }
+  },
+  "inputs": {
+    "samples_sha256": "2C45054DEF48F0B967F294CB556FBAA9F34145C88DCF5B0DF88038166358CA6E",
+    "blind_inputs_sha256": "32042936E05B74B8C513851FCBD51A0F04AE39E7E1D72D259C2BC9414FF95526",
+    "image_features_sha256": "36C3BE592B98506189A7D5DE71B21577CF626F0293B539D861534673B3E9FD70",
+    "text_features_sha256": "6667F2AD655C9ECC97CB3383F58988864EF51EC0B39C158B15986C66769F2DC4",
+    "kimi_development_sha256": "4F4CF509D9C79D763F2A9A7D5649D9FA3198089274A82120BF522D714695D47C",
+    "kimi_confirmatory_sha256": "BBED7DB70D5EAA9E1EC938677D484EDD5C6E009C2CBDD28361CEECA573E3EE70"
+  }
+}
