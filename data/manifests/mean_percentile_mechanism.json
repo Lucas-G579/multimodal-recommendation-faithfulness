@@ -1,0 +1,395 @@
+{
+  "status": "POSTHOC_EXPLORATORY_COMPLETE",
+  "protocol_commit": "29f8018",
+  "day17_metric_reproduction": {
+    "samples": 590,
+    "accuracy": 0.6305084745762712,
+    "text_samples": 548,
+    "image_samples": 42,
+    "text_recall": 0.6295620437956204,
+    "image_recall": 0.6428571428571429,
+    "macro_recall": 0.6362095933263816
+  },
+  "margin_bins": {
+    "[0,.025)": {
+      "samples": 59,
+      "accuracy": 0.559322033898305,
+      "text_samples": 56,
+      "image_samples": 3,
+      "text_recall": 0.5357142857142857,
+      "image_recall": 1.0,
+      "macro_recall": 0.7678571428571428
+    },
+    "[.025,.05)": {
+      "samples": 38,
+      "accuracy": 0.6052631578947368,
+      "text_samples": 31,
+      "image_samples": 7,
+      "text_recall": 0.5806451612903226,
+      "image_recall": 0.7142857142857143,
+      "macro_recall": 0.6474654377880185
+    },
+    "[.05,.10)": {
+      "samples": 105,
+      "accuracy": 0.6,
+      "text_samples": 94,
+      "image_samples": 11,
+      "text_recall": 0.5957446808510638,
+      "image_recall": 0.6363636363636364,
+      "macro_recall": 0.61605415860735
+    },
+    "[.10,.20)": {
+      "samples": 182,
+      "accuracy": 0.5879120879120879,
+      "text_samples": 168,
+      "image_samples": 14,
+      "text_recall": 0.5952380952380952,
+      "image_recall": 0.5,
+      "macro_recall": 0.5476190476190477
+    },
+    "[.20,1]": {
+      "samples": 206,
+      "accuracy": 0.7087378640776699,
+      "text_samples": 199,
+      "image_samples": 7,
+      "text_recall": 0.7085427135678392,
+      "image_recall": 0.7142857142857143,
+      "macro_recall": 0.7114142139267767
+    }
+  },
+  "mean_max_agreement": {
+    "counts": {
+      "agree": 420,
+      "disagree": 170
+    },
+    "groups": {
+      "agree": {
+        "coverage": 0.711864406779661,
+        "mean_rule": {
+          "samples": 420,
+          "accuracy": 0.7714285714285715,
+          "text_samples": 398,
+          "image_samples": 22,
+          "text_recall": 0.7763819095477387,
+          "image_recall": 0.6818181818181818,
+          "macro_recall": 0.7291000456829602
+        },
+        "max_rule": {
+          "samples": 420,
+          "accuracy": 0.7714285714285715,
+          "text_samples": 398,
+          "image_samples": 22,
+          "text_recall": 0.7763819095477387,
+          "image_recall": 0.6818181818181818,
+          "macro_recall": 0.7291000456829602
+        }
+      },
+      "disagree": {
+        "coverage": 0.288135593220339,
+        "mean_rule": {
+          "samples": 170,
+          "accuracy": 0.2823529411764706,
+          "text_samples": 150,
+          "image_samples": 20,
+          "text_recall": 0.24,
+          "image_recall": 0.6,
+          "macro_recall": 0.42
+        },
+        "max_rule": {
+          "samples": 170,
+          "accuracy": 0.7176470588235294,
+          "text_samples": 150,
+          "image_samples": 20,
+          "text_recall": 0.76,
+          "image_recall": 0.4,
+          "macro_recall": 0.5800000000000001
+        }
+      }
+    }
+  },
+  "mean_vs_kimi": {
+    "overall": {
+      "both_correct": 242,
+      "kimi_only": 155,
+      "neither": 63,
+      "mean_only": 130
+    },
+    "by_label": {
+      "image": {
+        "neither": 12,
+        "mean_only": 19,
+        "both_correct": 8,
+        "kimi_only": 3
+      },
+      "text": {
+        "both_correct": 234,
+        "kimi_only": 152,
+        "mean_only": 111,
+        "neither": 51
+      }
+    }
+  },
+  "deterministic_cases": {
+    "text": {
+      "strongest_margin_errors": [
+        {
+          "sample_id": "baby-u5977-i926",
+          "target_title": "Fisher-Price Papasan Cradle Swing, Butterfly Garden",
+          "label": "text",
+          "mean_prediction": "image",
+          "kimi_prediction": "text",
+          "image_mean_percentile": 0.8138743084125408,
+          "text_mean_percentile": 0.26794580791601647,
+          "margin": 0.5459285004965244,
+          "abs_margin": 0.5459285004965244
+        },
+        {
+          "sample_id": "baby-u9711-i626",
+          "target_title": "Cloud b Twilight Constellation Night Light, Turtle",
+          "label": "text",
+          "mean_prediction": "image",
+          "kimi_prediction": "text",
+          "image_mean_percentile": 0.6628174209107675,
+          "text_mean_percentile": 0.17117321605901545,
+          "margin": 0.491644204851752,
+          "abs_margin": 0.491644204851752
+        },
+        {
+          "sample_id": "baby-u10577-i1886",
+          "target_title": "Baby Buddy Secure-A-Toy, Navy/Red",
+          "label": "text",
+          "mean_prediction": "image",
+          "kimi_prediction": "text",
+          "image_mean_percentile": 0.8327422329408427,
+          "text_mean_percentile": 0.3467158462193219,
+          "margin": 0.4860263867215208,
+          "abs_margin": 0.4860263867215208
+        },
+        {
+          "sample_id": "baby-u7340-i1848",
+          "target_title": "Carters Easy Fit Jersey Bassinet Fitted Sheet, White",
+          "label": "text",
+          "mean_prediction": "image",
+          "kimi_prediction": "text",
+          "image_mean_percentile": 0.7855487776043883,
+          "text_mean_percentile": 0.3533834586466165,
+          "margin": 0.4321653189577718,
+          "abs_margin": 0.4321653189577718
+        },
+        {
+          "sample_id": "baby-u15512-i4352",
+          "target_title": "Philips AVENT BPA Free Classic Polypropylene Essentials Gift Set",
+          "label": "text",
+          "mean_prediction": "image",
+          "kimi_prediction": "text",
+          "image_mean_percentile": 0.7645056036317208,
+          "text_mean_percentile": 0.3372464179316215,
+          "margin": 0.4272591857000993,
+          "abs_margin": 0.4272591857000993
+        }
+      ],
+      "smallest_margin_correct": [
+        {
+          "sample_id": "baby-u10457-i6187",
+          "target_title": "Baby Banana Octo Brush, Purple",
+          "label": "text",
+          "mean_prediction": "text",
+          "kimi_prediction": "text",
+          "image_mean_percentile": 0.48233792027237904,
+          "text_mean_percentile": 0.4824324963351776,
+          "margin": -9.457606279855701e-05,
+          "abs_margin": 9.457606279855701e-05
+        },
+        {
+          "sample_id": "baby-u14901-i4329",
+          "target_title": "Evenflo 4 Pack Simplymilk Storage Bottles, 5 Ounce",
+          "label": "text",
+          "mean_prediction": "text",
+          "kimi_prediction": "text",
+          "image_mean_percentile": 0.9100581642786211,
+          "text_mean_percentile": 0.9131318863195724,
+          "margin": -0.0030737220409513544,
+          "abs_margin": 0.0030737220409513544
+        },
+        {
+          "sample_id": "baby-u6129-i6787",
+          "target_title": "Philips Avent BPA Free Natural Infant Starter Gift Set",
+          "label": "text",
+          "mean_prediction": "text",
+          "kimi_prediction": "text",
+          "image_mean_percentile": 0.46378209675131227,
+          "text_mean_percentile": 0.4674138175627748,
+          "margin": -0.0036317208114625132,
+          "abs_margin": 0.0036317208114625132
+        },
+        {
+          "sample_id": "baby-u17251-i6765",
+          "target_title": "OXO Tot On-the-Go Wipes Dispenser, Pink",
+          "label": "text",
+          "mean_prediction": "text",
+          "kimi_prediction": "image",
+          "image_mean_percentile": 0.568733153638814,
+          "text_mean_percentile": 0.574360429375325,
+          "margin": -0.005627275736511006,
+          "abs_margin": 0.005627275736511006
+        },
+        {
+          "sample_id": "baby-u9290-i3607",
+          "target_title": "Ju-Ju-Be Behave Earth Leather Diaper Bag, Brown/Zany Zinnias",
+          "label": "text",
+          "mean_prediction": "text",
+          "kimi_prediction": "text",
+          "image_mean_percentile": 0.5012909632571996,
+          "text_mean_percentile": 0.5082139310540501,
+          "margin": -0.006922967796850532,
+          "abs_margin": 0.006922967796850532
+        }
+      ]
+    },
+    "image": {
+      "strongest_margin_errors": [
+        {
+          "sample_id": "baby-u9680-i626",
+          "target_title": "Cloud b Twilight Constellation Night Light, Turtle",
+          "label": "image",
+          "mean_prediction": "text",
+          "kimi_prediction": "text",
+          "image_mean_percentile": 0.3789189956022131,
+          "text_mean_percentile": 0.8119946091644206,
+          "margin": -0.4330756135622075,
+          "abs_margin": 0.4330756135622075
+        },
+        {
+          "sample_id": "baby-u10585-i1778",
+          "target_title": "Natursutten BPA-Free Natural Rubber Pacifier, Orthodontic, 0-6 Months",
+          "label": "image",
+          "mean_prediction": "text",
+          "kimi_prediction": "text",
+          "image_mean_percentile": 0.43377311202534635,
+          "text_mean_percentile": 0.6410838416796709,
+          "margin": -0.20731072965432457,
+          "abs_margin": 0.20731072965432457
+        },
+        {
+          "sample_id": "baby-u13766-i6280",
+          "target_title": "Britax Boulevard 70-G3 Convertible Car Seat Seat, Onyx",
+          "label": "image",
+          "mean_prediction": "text",
+          "kimi_prediction": "text",
+          "image_mean_percentile": 0.27359909206979716,
+          "text_mean_percentile": 0.442786210810044,
+          "margin": -0.16918711874024683,
+          "abs_margin": 0.16918711874024683
+        },
+        {
+          "sample_id": "baby-u4011-i2194",
+          "target_title": "Regalo Easy Open 50 Inch Super Wide Walk Thru Gate - White",
+          "label": "image",
+          "mean_prediction": "text",
+          "kimi_prediction": "image",
+          "image_mean_percentile": 0.5820116328557242,
+          "text_mean_percentile": 0.74492835863243,
+          "margin": -0.1629167257767058,
+          "abs_margin": 0.1629167257767058
+        },
+        {
+          "sample_id": "baby-u12840-i4100",
+          "target_title": "Sassy Developmental Sensory Ball Set - Inspires Touch",
+          "label": "image",
+          "mean_prediction": "text",
+          "kimi_prediction": "invalid",
+          "image_mean_percentile": 0.6478933182011632,
+          "text_mean_percentile": 0.7937296070364591,
+          "margin": -0.14583628883529587,
+          "abs_margin": 0.14583628883529587
+        }
+      ],
+      "smallest_margin_correct": [
+        {
+          "sample_id": "baby-u9925-i1135",
+          "target_title": "American Baby Company 100% Cotton Percale Fitted Portable/Mini Crib Sheet, Pink Dots",
+          "label": "image",
+          "mean_prediction": "image",
+          "kimi_prediction": "text",
+          "image_mean_percentile": 0.9859554546744219,
+          "text_mean_percentile": 0.978862249964534,
+          "margin": 0.007093204709887946,
+          "abs_margin": 0.007093204709887946
+        },
+        {
+          "sample_id": "baby-u9619-i623",
+          "target_title": "Protect-a-Bub Deluxe 3-in-1 Sunshade - Single - Black",
+          "label": "image",
+          "mean_prediction": "image",
+          "kimi_prediction": "text",
+          "image_mean_percentile": 0.9157800160779307,
+          "text_mean_percentile": 0.8994183572137892,
+          "margin": 0.016361658864141537,
+          "abs_margin": 0.016361658864141537
+        },
+        {
+          "sample_id": "baby-u11085-i4126",
+          "target_title": "Pearhead Lil' Peach Photo Album, Bird",
+          "label": "image",
+          "mean_prediction": "image",
+          "kimi_prediction": "image",
+          "image_mean_percentile": 0.5148247978436657,
+          "text_mean_percentile": 0.4953326713008937,
+          "margin": 0.019492126542772048,
+          "abs_margin": 0.019492126542772048
+        },
+        {
+          "sample_id": "baby-u8007-i2031",
+          "target_title": "Dr. Brown's Formula Mixing Pitcher",
+          "label": "image",
+          "mean_prediction": "image",
+          "kimi_prediction": "text",
+          "image_mean_percentile": 0.4878422471272521,
+          "text_mean_percentile": 0.46219321889629733,
+          "margin": 0.025649028230954773,
+          "abs_margin": 0.025649028230954773
+        },
+        {
+          "sample_id": "baby-u9814-i629",
+          "target_title": "American Baby Company Waterproof Quilted Cotton Portable/Mini Crib Mattress Pad Cover, White",
+          "label": "image",
+          "mean_prediction": "image",
+          "kimi_prediction": "text",
+          "image_mean_percentile": 0.6569442474109802,
+          "text_mean_percentile": 0.6214782238615406,
+          "margin": 0.03546602354943962,
+          "abs_margin": 0.03546602354943962
+        }
+      ]
+    }
+  },
+  "figures": [
+    "results/figures/day18_macro_recall_comparison.png",
+    "results/figures/day18_macro_recall_comparison.svg",
+    "results/figures/day18_class_recall_comparison.png",
+    "results/figures/day18_class_recall_comparison.svg",
+    "results/figures/day18_mean_percentile_scatter.png",
+    "results/figures/day18_mean_percentile_scatter.svg",
+    "results/figures/day18_margin_diagnostic.png",
+    "results/figures/day18_margin_diagnostic.svg"
+  ],
+  "integrity": {
+    "samples": 590,
+    "unique_users": 583,
+    "unique_targets": 459,
+    "zero_norm_vectors": {
+      "image": 0,
+      "text": 0
+    },
+    "compute_backend": {
+      "image": "cpu",
+      "text": "cpu"
+    }
+  },
+  "inputs": {
+    "day17_sha256": "3485E98721BB44ECECAE3C666CB49009D74D2041A403C938364176157A764B24",
+    "samples_sha256": "2C45054DEF48F0B967F294CB556FBAA9F34145C88DCF5B0DF88038166358CA6E",
+    "blind_sha256": "32042936E05B74B8C513851FCBD51A0F04AE39E7E1D72D259C2BC9414FF95526",
+    "kimi_sha256": "BBED7DB70D5EAA9E1EC938677D484EDD5C6E009C2CBDD28361CEECA573E3EE70"
+  }
+}
