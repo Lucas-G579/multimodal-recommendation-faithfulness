@@ -105,3 +105,5 @@ image/text 的 v2 已完成无标签 dry-run 和协议测试，但尚未产生 A
 召回率分别为 72.60%/71.43%，没有退化为多数类恒猜；提示词、schema 和运行参数现已
 冻结，不再构造 v3。590 条确认集只完成离线无标签请求准备，尚未发送。详见
 [Day 14 Kimi v2 开发验证与冻结](./results/day14_kimi_prompt_v2_validation.md)。
+
+Kimi v2 的 590 条一次性正式确认实验已完成。ITT 宏平均召回率为 48.31%（用户聚类 bootstrap 95% CI 41.64%–55.59%），text/image 召回率为 70.44%/26.19%；结果没有证明模型能可靠识别主要证据模态。详见 [Day 15 Kimi v2 正式确认实验](./results/day15_kimi_confirmatory_evaluation.md)。
