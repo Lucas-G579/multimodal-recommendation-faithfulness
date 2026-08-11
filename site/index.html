@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="FaithRec-MM：审计多模态推荐解释是否忠实反映模型的真实图文依赖。">
+  <title>FaithRec-MM · 多模态推荐解释忠实性审计</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="hero">
+    <nav class="nav shell" aria-label="主导航">
+      <a class="brand" href="#top" aria-label="FaithRec-MM 首页">
+        <span class="brand-mark">F</span><span>FaithRec-MM</span>
+      </a>
+      <div class="nav-links">
+        <a href="#findings">发现</a>
+        <a href="#method">方法</a>
+        <a href="#evidence">证据</a>
+        <a class="nav-cta" href="https://github.com/Lucas-G579/multimodal-recommendation-faithfulness">GitHub</a>
+      </div>
+    </nav>
+
+    <div class="hero-grid shell" id="top">
+      <div class="hero-copy">
+        <p class="eyebrow">MULTIMODAL RECOMMENDATION · FAITHFULNESS AUDIT</p>
+        <h1>解释说它看了图片，<br><em>模型真的看了吗？</em></h1>
+        <p class="lede">我们用因果干预建立行为真值，审计多模态大模型对推荐系统图文依赖的自我解释。结果显示：流畅、高置信的解释，仍可能系统性地归因错误。</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#findings">查看核心结果</a>
+          <a class="button secondary" href="https://github.com/Lucas-G579/multimodal-recommendation-faithfulness/blob/main/results/day15_kimi_confirmatory_evaluation.md">阅读正式报告</a>
+        </div>
+        <div class="trust-row" aria-label="研究质量标记">
+          <span>✓ 一次性确认实验</span>
+          <span>✓ 用户级 Bootstrap</span>
+          <span>✓ 协议先冻结</span>
+        </div>
+      </div>
+
+      <aside class="hero-card" aria-label="核心结果摘要">
+        <div class="card-kicker">CONFIRMATORY RESULT</div>
+        <div class="score-block">
+          <span class="score">48.31%</span>
+          <span class="score-label">Kimi v2 宏平均召回</span>
+        </div>
+        <div class="compare-line">
+          <span>Text recall</span><strong>70.44%</strong>
+        </div>
+        <div class="compare-line danger">
+          <span>Image recall</span><strong>26.19%</strong>
+        </div>
+        <div class="card-rule"></div>
+        <p>95% CI 41.64%–55.59%，未证明模型能可靠识别推荐系统实际依赖的模态。</p>
+        <span class="status-chip">CONFIRMATORY · FROZEN</span>
+      </aside>
+    </div>
+  </header>
+
+  <main>
+    <section class="metrics shell" aria-label="实验规模">
+      <div><strong>590</strong><span>正式确认样本</span></div>
+      <div><strong>583</strong><span>独立用户</span></div>
+      <div><strong>10,000</strong><span>聚类 Bootstrap</span></div>
+      <div><strong>13/13</strong><span>协议测试通过</span></div>
+    </section>
+
+    <section class="section shell" id="findings">
+      <div class="section-heading">
+        <p class="eyebrow">KEY FINDINGS</p>
+        <h2>生成式解释输给了一个<br>不生成解释的简单基线</h2>
+        <p>确定性的目录百分位相似度方法不依赖提示词，不调用外部 API，却更接近推荐模型的行为干预标签。</p>
+      </div>
+
+      <div class="finding-grid">
+        <article class="finding featured">
+          <span class="finding-index">01</span>
+          <h3>类别平衡忠实性</h3>
+          <div class="big-number">+15.31<span>pp</span></div>
+          <p>Mean Percentile 相对 Kimi v2 的宏召回提升；配对用户级 95% CI 为 +5.34 至 +24.87 个百分点。</p>
+        </article>
+        <article class="finding">
+          <span class="finding-index">02</span>
+          <h3>高置信仍会错</h3>
+          <div class="big-number">133</div>
+          <p>590 条正式样本中，Kimi 出现 133 个置信度 ≥ 0.8 的错误回答。</p>
+        </article>
+        <article class="finding">
+          <span class="finding-index">03</span>
+          <h3>图片归因短板</h3>
+          <div class="big-number">11/42</div>
+          <p>Kimi 只识别出 11 个 image 真值；Mean Percentile 识别出 27 个。</p>
+        </article>
+      </div>
+
+      <figure class="paper-figure">
+        <img src="assets/day18_macro_recall_comparison.png" alt="Kimi、多数类、Mean Percentile 与 Max Percentile 的宏召回及置信区间比较">
+        <figcaption><strong>Figure 1.</strong> 正式确认集上的宏平均召回。非 LLM 比较在确认集解盲后设计，明确标记为事后探索。</figcaption>
+      </figure>
+    </section>
+
+    <section class="section dark" id="method">
+      <div class="shell">
+        <div class="section-heading light">
+          <p class="eyebrow">AUDIT PIPELINE</p>
+          <h2>先测行为，再审计解释</h2>
+          <p>不把模型自己的措辞当真值，而是通过关闭、置换图像与文本分支，观察推荐分数和排名如何变化。</p>
+        </div>
+        <ol class="steps">
+          <li><span>01</span><div><h3>复现推荐模型</h3><p>在 Baby 数据集复现 MGCN，并跨三个训练种子验证 checkpoint 与指标。</p></div></li>
+          <li><span>02</span><div><h3>建立干预真值</h3><p>通过 zero、mean 和多种 permutation 干预，筛选跨训练种子稳定的模态标签。</p></div></li>
+          <li><span>03</span><div><h3>盲化生成解释</h3><p>LLM 只看到公开商品图文与匿名化历史，看不到干预标签、排名变化或答案字段。</p></div></li>
+          <li><span>04</span><div><h3>一次性确认</h3><p>提示词、schema、重试和评分规则先冻结，再运行 590 条未见确认样本。</p></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="section shell" id="evidence">
+      <div class="section-heading">
+        <p class="eyebrow">EVIDENCE, NOT HYPE</p>
+        <h2>普通准确率会掩盖失败</h2>
+        <p>确认集的 text 真值占 92.88%。永远猜 text 可获得 92.88% accuracy，却完全识别不了 image，因此主分析采用分类别召回与宏平均召回。</p>
+      </div>
+
+      <div class="evidence-grid">
+        <figure class="paper-figure compact">
+          <img src="assets/day18_class_recall_comparison.png" alt="四种方法的文本召回和图片召回比较">
+          <figcaption><strong>Figure 2.</strong> 分类别召回揭示多数类掩盖。</figcaption>
+        </figure>
+        <div class="evidence-copy">
+          <div class="mini-result"><span>Kimi v2</span><strong>48.31%</strong><small>宏召回</small></div>
+          <div class="mini-result accent"><span>Mean Percentile</span><strong>63.62%</strong><small>宏召回</small></div>
+          <div class="mini-result green"><span>Max Percentile</span><strong>65.98%</strong><small>宏召回 · 探索性</small></div>
+          <p class="note">独立的 400 条平衡 A+B 敏感性验证中，Full Max 宏召回为 57.25%（95% CI 52.50%–62.06%），无需拒答即可保持高于机会水平的信号。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section conclusion">
+      <div class="shell conclusion-grid">
+        <div>
+          <p class="eyebrow">TAKEAWAY</p>
+          <h2>解释质量 ≠ 解释忠实性</h2>
+        </div>
+        <p>自然、具体、自信的多模态解释，不代表它准确描述了推荐模型的内部依赖。可靠的解释评估需要独立行为证据、严格盲化、类别平衡指标，以及在方法选择前冻结的验证协议。</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="shell footer-grid">
+      <div><strong>FaithRec-MM</strong><p>Multimodal recommendation explanation faithfulness audit.</p></div>
+      <div class="footer-links">
+        <a href="https://github.com/Lucas-G579/multimodal-recommendation-faithfulness">Repository</a>
+        <a href="https://github.com/Lucas-G579/multimodal-recommendation-faithfulness/tree/main/results">Reports</a>
+        <a href="https://github.com/Lucas-G579/multimodal-recommendation-faithfulness/tree/main/scripts">Reproduction</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

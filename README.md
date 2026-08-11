@@ -1,5 +1,7 @@
 # FaithRec-MM
 
+项目主页：https://lucas-g579.github.io/multimodal-recommendation-faithfulness/
+
 面向多模态推荐解释的模态归因错配审计项目。
 
 当前阶段：Day 10，已完成 seed=999、2026、3407 三个 MGCN 的跨训练种子逐样本干预
